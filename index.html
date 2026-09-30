@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accesso · Pierpont by 4MC</title>
+<meta name="description" content="Accesso riservato alla piattaforma Pierpont: email di lavoro, password e codice dal telefono.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F4F5F7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%230B1026'%3E%3Cpolygon points='8,6 47,40 47,46.5 40,46.5'/%3E%3Cpolygon points='92,6 53,40 53,46.5 60,46.5'/%3E%3Cpolygon points='5,95 47,60 47,53.5 40,53.5'/%3E%3Cpolygon points='95,95 53,60 53,53.5 60,53.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/pierpont.css">
+<style>
+  /* ------------------------------------------------------------------
+     Accesso — schermo diviso: cristallo a sinistra, modulo a destra.
+     Usa solo i comandi del sistema (pierpont.css); qui c'è l'impaginazione.
+     ------------------------------------------------------------------ */
+  .accesso {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Sinistra: la foto, piena altezza, ferma mentre la destra scorre */
+  .accesso__foto {
+    position: relative;
+    overflow: hidden;
+    background: var(--superficie-2);
+  }
+
+  @media (min-width: 900px) {
+    .accesso__foto {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      height: 100dvh;
+    }
+  }
+
+  .accesso__immagine {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    transform-origin: 50% 60%;
+  }
+
+  /* Respiro lentissimo, come l'apertura del sito */
+  @media (prefers-reduced-motion: no-preference) {
+    .accesso__immagine {
+      animation: accesso-respiro 18s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes accesso-respiro {
+    from { transform: scale(1); }
+    to { transform: scale(1.03); }
+  }
+
+  /* Squadrette di registro e mirino al centro */
+  .accesso__registro {
+    position: absolute;
+    inset: 40px;
+    pointer-events: none;
+    --angoli-colore: rgba(255, 255, 255, .9);
+    --angoli-lato: 24px;
+  }
+
+  .accesso__mira {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 21px;
+    height: 21px;
+    color: #FFFFFF;
+    opacity: .7;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* Didascalia direttamente sulla parte chiara della foto: niente targa bianca */
+  .accesso__didascalia {
+    position: absolute;
+    left: 64px;
+    bottom: 64px;
+    width: min(340px, calc(100% - 128px));
+    color: #0B1026;
+  }
+
+  .accesso__motto {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -.012em;
+  }
+
+  .accesso__motto em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .accesso__sottotitolo {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(11, 16, 38, .28);
+    font-size: .8125rem;
+    color: #3A4054;
+  }
+
+  .accesso__anni {
+    font-variant-numeric: tabular-nums;
+    color: #62687C;
+  }
+
+  /* Destra: colonna calma, tre fasce (testa, centro, firma) */
+  .accesso__lato {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 0 64px 0 72px;
+    background: var(--pagina);
+  }
+
+  /* Righello ottico sulla giuntura: tacche fini, una linea cobalto a metà */
+  .accesso__righello {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    pointer-events: none;
+    opacity: .55;
+    background:
+      repeating-linear-gradient(to bottom, var(--linea-forte) 0 1px, transparent 1px 10px) left top / 5px 100% no-repeat,
+      repeating-linear-gradient(to bottom, var(--linea-forte) 0 1px, transparent 1px 50px) left top / 11px 100% no-repeat;
+  }
+
+  .accesso__righello::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background: var(--accento);
+  }
+
+  .accesso__testa {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: 96px;
+  }
+
+  .accesso__invito {
+    font-size: .8125rem;
+    color: var(--testo-2);
+    text-align: right;
+  }
+
+  .accesso__invito a {
+    color: var(--accento);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .22em;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+    transition: color var(--durata-breve) ease, text-decoration-color var(--durata-breve) ease;
+  }
+
+  .accesso__invito a:hover {
+    color: var(--testo);
+    text-decoration-color: currentColor;
+  }
+
+  .accesso__centro {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 0 24px;
+  }
+
+  .accesso__modulo {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Su schermi alti il modulo tiene la stessa altezza tra un passo e l'altro:
+     il titolo non si sposta quando si passa al codice */
+  @media (min-width: 900px) and (min-height: 860px) {
+    .accesso__modulo {
+      min-height: 600px;
+    }
+  }
+
+  /* Linea d'avanzamento a due segmenti + «Passo 1 di 2» */
+  .accesso__avanzamento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    height: 2px;
+  }
+
+  .accesso__avanzamento span {
+    display: block;
+    background: var(--linea);
+    transition: background-color 300ms ease;
+  }
+
+  .accesso__avanzamento span.fatto { background: var(--testo); }
+  .accesso__avanzamento span.corrente { background: var(--accento); }
+
+  .accesso__indice {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: .75rem;
+    line-height: 1.4;
+    color: var(--testo-3);
+  }
+
+  .accesso__indice strong {
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--accento);
+  }
+
+  /* I pannelli dei passi: uno solo visibile; entra salendo, esce salendo */
+  .accesso__pannello {
+    margin-top: 40px;
+    transition: opacity 240ms var(--curva), transform 240ms var(--curva);
+  }
+
+  .accesso__pannello.esce {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+
+  .accesso__pannello.entra {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition: none;
+  }
+
+  .accesso__titolo {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-size: 2.75rem;
+    line-height: 1.05;
+    letter-spacing: -.015em;
+    color: var(--testo);
+  }
+
+  .accesso__titolo em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .accesso__sotto {
+    margin-top: 12px;
+    font-size: .9375rem;
+    line-height: 1.5;
+    color: var(--testo-2);
+  }
+
+  .accesso__identita {
+    margin-top: 8px;
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--testo-3);
+    overflow-wrap: anywhere;
+  }
+
+  .accesso__identita strong {
+    font-weight: 500;
+    color: var(--testo-2);
+  }
+
+  .accesso__campi {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 34px;
+  }
+
+  .accesso__nota {
+    margin-top: 12px;
+  }
+
+  .accesso__opzioni {
+    margin-top: 22px;
+  }
+
+  .accesso__invia {
+    margin-top: 28px;
+  }
+
+  .accesso__legale {
+    margin-top: 14px;
+    font-size: .75rem;
+    line-height: 1.5;
+    color: var(--testo-3);
+    text-align: center;
+  }
+
+  .accesso__legale a,
+  .accesso__scambio a {
+    color: var(--testo-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .22em;
+    transition: color var(--durata-breve) ease;
+  }
+
+  .accesso__legale a:hover,
+  .accesso__scambio a:hover {
+    color: var(--accento);
+  }
+
+  /* Passo 2: il codice */
+  .accesso__codice {
+    margin-top: 30px;
+  }
+
+  .accesso__codice .pp-codice__caselle {
+    justify-content: space-between;
+  }
+
+  .accesso__riga {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-top: 18px;
+    font-size: .8125rem;
+    color: var(--testo-2);
+  }
+
+  .accesso__conto {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--testo-2);
+    white-space: nowrap;
+  }
+
+  .accesso__conto.scaduto {
+    color: var(--errore);
+  }
+
+  .accesso__esito {
+    min-height: 1.3em;
+    margin-top: 6px;
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--ok);
+  }
+
+  .accesso__esito:empty {
+    margin-top: 0;
+    min-height: 0;
+  }
+
+  .accesso__prova {
+    margin-top: 14px;
+    font-size: .75rem;
+    line-height: 1.5;
+    color: var(--testo-3);
+    text-align: center;
+  }
+
+  .accesso__scambio {
+    margin-top: 22px;
+    font-size: .8125rem;
+    color: var(--testo-2);
+    text-align: center;
+  }
+
+  /* Invito: le regole della password, testo e segno, nessuna scatola */
+  .accesso__regole {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    margin-top: 14px;
+    font-size: .8125rem;
+    line-height: 1.45;
+    color: var(--testo-3);
+  }
+
+  @media (max-width: 420px) {
+    .accesso__regole {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .accesso__regole li {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    transition: color var(--durata-breve) ease;
+  }
+
+  .accesso__regole li::before {
+    content: "○";
+    content: "○" / "";
+    flex: none;
+    width: 1em;
+    font-family: var(--font-simboli);
+    font-size: .8em;
+    text-align: center;
+  }
+
+  .accesso__regole li.ok {
+    color: var(--ok);
+  }
+
+  .accesso__regole li.ok::before {
+    content: "✓";
+    content: "✓" / "";
+  }
+
+  /* Riga di sicurezza sotto il modulo */
+  .accesso__sicurezza {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 44px;
+    font-size: .8125rem;
+    line-height: 1.55;
+    color: var(--testo-2);
+  }
+
+  .accesso__sicurezza svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    color: var(--testo-3);
+  }
+
+  /* Firma in basso */
+  .accesso__firma {
+    flex: none;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--linea);
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--testo-3);
+    text-align: center;
+  }
+
+  .accesso__firma em {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.125rem;
+    color: var(--testo);
+    padding: 0 .1em;
+  }
+
+  .accesso__firma .studio {
+    font-weight: 500;
+    color: var(--testo-2);
+  }
+
+  /* Nome e studio restano insieme se la riga va a capo */
+  .accesso__firma-nome {
+    white-space: nowrap;
+  }
+
+  .accesso__senza-script {
+    margin-top: 24px;
+  }
+
+  /* Schermi bassi: il modulo parte dall'alto e la colonna scorre */
+  @media (max-height: 760px) and (min-width: 900px) {
+    .accesso__centro {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Schermo diviso ma stretto (tablet orizzontale, finestre ridotte):
+     margini più corti, link in testa senza premessa, titoli un filo più piccoli */
+  @media (min-width: 900px) and (max-width: 1180px) {
+    .accesso__lato {
+      padding: 0 40px 0 48px;
+    }
+
+    .accesso__testa .pp-logo {
+      --logo-segno: 22px;
+      --logo-nome: 13px;
+      --logo-firma: 10px;
+      --logo-spazio: 11px;
+    }
+
+    .accesso__invito {
+      white-space: nowrap;
+    }
+
+    .accesso__invito-prefisso {
+      display: none;
+    }
+
+    .accesso__titolo {
+      font-size: 2.375rem;
+    }
+
+    .accesso__didascalia {
+      left: 48px;
+      bottom: 48px;
+      width: min(340px, calc(100% - 96px));
+    }
+
+    .accesso__motto {
+      font-size: 1.875rem;
+    }
+  }
+
+  /* Telefono e tablet stretto: la foto diventa una fascia corta in alto,
+     con la punta del cristallo e il motto nella parte chiara */
+  @media (max-width: 899px) {
+    .accesso {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: auto;
+    }
+
+    .accesso__foto {
+      height: 240px;
+    }
+
+    .accesso__immagine {
+      object-position: 50% 0%;
+      animation: none;
+    }
+
+    .accesso__registro,
+    .accesso__mira,
+    .accesso__sottotitolo {
+      display: none;
+    }
+
+    .accesso__didascalia {
+      left: 24px;
+      right: 24px;
+      top: 26px;
+      bottom: auto;
+      width: auto;
+    }
+
+    .accesso__motto {
+      font-size: 1.75rem;
+    }
+
+    .accesso__lato {
+      min-height: calc(100vh - 240px);
+      min-height: calc(100dvh - 240px);
+      padding: 0 24px;
+    }
+
+    .accesso__righello {
+      display: none;
+    }
+
+    .accesso__testa {
+      height: 72px;
+    }
+
+    /* Marchio piccolo e link su una riga sola */
+    .accesso__testa .pp-logo {
+      --logo-segno: 22px;
+      --logo-nome: 13px;
+      --logo-firma: 10px;
+      --logo-spazio: 11px;
+    }
+
+    .accesso__invito {
+      white-space: nowrap;
+    }
+
+    .accesso__invito-prefisso {
+      display: none;
+    }
+
+    .accesso__centro {
+      justify-content: flex-start;
+      padding: 8px 0 32px;
+    }
+
+    .accesso__modulo {
+      max-width: none;
+    }
+
+    .accesso__pannello {
+      margin-top: 32px;
+    }
+
+    .accesso__titolo {
+      font-size: 2.25rem;
+    }
+
+    .accesso__campi {
+      margin-top: 28px;
+    }
+
+    .accesso__sicurezza {
+      margin-top: 36px;
+    }
+
+    .accesso__firma {
+      height: auto;
+      padding: 20px 0 28px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .accesso__lato {
+      padding: 0 20px;
+    }
+
+    .accesso__testa .pp-logo__firma {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="pp-salta" href="#modulo">Vai al modulo di accesso</a>
+
+<div class="accesso" data-accesso>
+
+  <!-- Sinistra: il cristallo -->
+  <aside class="accesso__foto" aria-label="Il cristallo Pierpont">
+    <img class="accesso__immagine" src="assets/img/cristallo-dettaglio.jpg" width="1792" height="2240" alt="Punta di cristallo del marchio Pierpont, fotografata da vicino: sfaccettature bianche e cobalto su fondo chiaro." fetchpriority="high">
+    <div class="accesso__registro pp-angoli" aria-hidden="true"></div>
+    <svg class="accesso__mira" viewBox="0 0 21 21" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><path d="M10.5 0v21M0 10.5h21"/></svg>
+    <div class="accesso__didascalia">
+      <p class="accesso__motto">Per chi pensa <em>in grande</em>.</p>
+      <p class="accesso__sottotitolo">
+        <span>Intelligenza artificiale per l’M&amp;A, fusioni e acquisizioni</span>
+        <span class="accesso__anni">1901 — 2026</span>
+      </p>
+    </div>
+  </aside>
+
+  <!-- Destra: il modulo -->
+  <main class="accesso__lato">
+    <div class="accesso__righello" aria-hidden="true"></div>
+
+    <header class="accesso__testa">
+      <a class="pp-logo" href="#" aria-label="Pierpont by 4MC, pagina iniziale">
+        <svg class="pp-logo__segno" viewBox="0 0 100 100" aria-hidden="true"><polygon points="8,6 47,40 47,46.5 40,46.5"/><polygon points="92,6 53,40 53,46.5 60,46.5"/><polygon points="5,95 47,60 47,53.5 40,53.5"/><polygon points="95,95 53,60 53,53.5 60,53.5"/></svg>
+        <span class="pp-logo__nome">PIERPONT</span>
+        <span class="pp-logo__firma">BY 4MC</span>
+      </a>
+      <p class="accesso__invito" data-invito-link hidden>
+        <span class="accesso__invito-prefisso">Hai ricevuto un invito?</span> <a href="#invito">Attiva l’accesso</a>
+      </p>
+      <p class="accesso__invito" data-accesso-link hidden>
+        <span class="accesso__invito-prefisso">Hai già l’accesso?</span> <a href="#accesso">Entra</a>
+      </p>
+    </header>
+
+    <div class="accesso__centro">
+      <div class="accesso__modulo" id="modulo">
+
+        <!-- Avanzamento: due segmenti, «Passo 1 di 2» -->
+        <div class="accesso__avanzamento" aria-hidden="true">
+          <span class="corrente"></span>
+          <span></span>
+        </div>
+        <p class="accesso__indice" aria-live="polite">
+          <strong data-indice-passo>Passo 1 di 2</strong>
+          <span data-indice-nome>Credenziali</span>
+        </p>
+
+        <!-- Passo 1: credenziali -->
+        <section class="accesso__pannello" data-passo="1" aria-labelledby="titolo-1">
+          <h1 class="accesso__titolo" id="titolo-1">Si entra <em>su invito</em>.</h1>
+          <p class="accesso__sotto">Riservato a boutique, fondi e studi professionali.</p>
+
+          <form class="accesso__form" id="modulo-credenziali" action="#" method="post" novalidate>
+            <div class="accesso__campi">
+              <div class="pp-campo">
+                <label class="pp-campo__etichetta" for="email">Nome utente</label>
+                <input class="pp-campo__input" id="email" name="email" type="text" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" aria-describedby="email-errore" required>
+                <p class="pp-campo__errore" id="email-errore" hidden></p>
+              </div>
+
+              <div class="pp-campo">
+                <div class="pp-campo__testa">
+                  <label class="pp-campo__etichetta" for="password">Password</label>
+                  <button class="pp-azione" type="button" aria-expanded="false" aria-controls="nota-password" data-dimenticata>Password dimenticata?</button>
+                </div>
+                <div class="pp-campo__gruppo">
+                  <input class="pp-campo__input" id="password" name="password" type="password" autocomplete="current-password" aria-describedby="password-errore" required>
+                  <button class="pp-campo__azione" type="button" aria-label="Mostra la password" aria-pressed="false" data-occhio>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.4-6.25 9.5-6.25S21.5 12 21.5 12s-3.4 6.25-9.5 6.25S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.75"/></svg>
+                  </button>
+                </div>
+                <p class="pp-campo__errore" id="password-errore" hidden></p>
+                <p class="pp-avviso pp-avviso--info accesso__nota" id="nota-password" hidden>Per riservatezza la password non si rinnova da sola. Scrivi allo studio dal tuo indirizzo di lavoro: ricevi un nuovo invito, valido un giorno.</p>
+              </div>
+            </div>
+
+            <div class="accesso__opzioni">
+              <label class="pp-spunta"><input type="checkbox" name="ricordami" id="ricordami" checked> Ricordami su questo dispositivo</label>
+            </div>
+
+            <div class="accesso__invia">
+              <button class="pp-btn pp-btn--primario pp-btn--pieno" type="submit">Entra</button>
+            </div>
+            <p class="accesso__legale">Accedendo accetti i <a href="#">Termini</a> e l’<a href="#">Informativa privacy</a>.</p>
+          </form>
+        </section>
+
+        <!-- Passo 2: il codice dal telefono -->
+        <section class="accesso__pannello" data-passo="2" aria-labelledby="titolo-2" hidden>
+          <h1 class="accesso__titolo" id="titolo-2">Il codice <em>dal telefono</em>.</h1>
+          <p class="accesso__sotto">Ti abbiamo mandato sei cifre sul telefono registrato. Valgono cinque minuti.</p>
+          <p class="accesso__identita" data-identita hidden>Accesso per <strong data-email></strong></p>
+
+          <form class="accesso__form" id="modulo-codice" action="#" method="post" novalidate>
+            <fieldset class="pp-codice accesso__codice">
+              <legend class="pp-campo__etichetta">Codice a 6 cifre</legend>
+              <div class="pp-codice__caselle" data-codice>
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="one-time-code" aria-label="Cifra 1 di 6" aria-describedby="codice-errore">
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="off" aria-label="Cifra 2 di 6">
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="off" aria-label="Cifra 3 di 6">
+                <span class="pp-codice__trattino" aria-hidden="true"></span>
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="off" aria-label="Cifra 4 di 6">
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="off" aria-label="Cifra 5 di 6">
+                <input class="pp-codice__cifra" type="text" inputmode="numeric" pattern="[0-9]*" placeholder=" " autocomplete="off" aria-label="Cifra 6 di 6">
+              </div>
+              <p class="pp-campo__errore" id="codice-errore" hidden></p>
+            </fieldset>
+
+            <div class="accesso__riga">
+              <button class="pp-azione" type="button" data-rimanda>Manda un nuovo codice</button>
+              <span class="accesso__conto">Scade tra <span data-conto>5:00</span></span>
+            </div>
+            <p class="accesso__esito" role="status" aria-live="polite" data-esito></p>
+
+            <div class="accesso__invia">
+              <button class="pp-btn pp-btn--primario pp-btn--pieno" type="submit">Conferma il codice</button>
+            </div>
+            <p class="accesso__scambio"><button class="pp-azione pp-azione--tenue" type="button" data-indietro>Torna indietro</button></p>
+          </form>
+        </section>
+
+        <!-- Stato d'invito: si sceglie la password, poi il codice -->
+        <section class="accesso__pannello" data-passo="invito" aria-labelledby="titolo-invito" hidden>
+          <h1 class="accesso__titolo" id="titolo-invito">Attiva <em>l’accesso</em>.</h1>
+          <p class="accesso__sotto">Scrivi l’email a cui è arrivato l’invito e scegli la password: poi confermi il telefono con un codice.</p>
+
+          <form class="accesso__form" id="modulo-invito" action="#" method="post" novalidate>
+            <div class="accesso__campi">
+              <div class="pp-campo">
+                <label class="pp-campo__etichetta" for="invito-email">Email di lavoro</label>
+                <input class="pp-campo__input" id="invito-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" aria-describedby="invito-email-errore" required>
+                <p class="pp-campo__errore" id="invito-email-errore" hidden></p>
+              </div>
+
+              <div class="pp-campo">
+                <label class="pp-campo__etichetta" for="nuova-password">Nuova password</label>
+                <div class="pp-campo__gruppo">
+                  <input class="pp-campo__input" id="nuova-password" name="nuova" type="password" autocomplete="new-password" aria-describedby="regole-password nuova-password-errore" required minlength="8">
+                  <button class="pp-campo__azione" type="button" aria-label="Mostra la password" aria-pressed="false" data-occhio>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.4-6.25 9.5-6.25S21.5 12 21.5 12s-3.4 6.25-9.5 6.25S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.75"/></svg>
+                  </button>
+                </div>
+                <p class="pp-campo__errore" id="nuova-password-errore" hidden></p>
+              </div>
+
+              <div class="pp-campo">
+                <label class="pp-campo__etichetta" for="conferma-password">Conferma la password</label>
+                <div class="pp-campo__gruppo">
+                  <input class="pp-campo__input" id="conferma-password" name="conferma" type="password" autocomplete="new-password" aria-describedby="conferma-password-errore" required>
+                  <button class="pp-campo__azione" type="button" aria-label="Mostra la password" aria-pressed="false" data-occhio>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.4-6.25 9.5-6.25S21.5 12 21.5 12s-3.4 6.25-9.5 6.25S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.75"/></svg>
+                  </button>
+                </div>
+                <p class="pp-campo__errore" id="conferma-password-errore" hidden></p>
+              </div>
+            </div>
+
+            <ul class="accesso__regole" id="regole-password" aria-label="Regole della password">
+              <li data-regola="lunghezza">Almeno 12 caratteri</li>
+              <li data-regola="numero">Almeno un numero</li>
+              <li data-regola="simbolo">Almeno un simbolo</li>
+              <li data-regola="uguali">Le due password coincidono</li>
+            </ul>
+
+            <div class="accesso__invia">
+              <button class="pp-btn pp-btn--primario pp-btn--pieno" type="submit">Attiva e continua</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Riga di sicurezza, sempre visibile -->
+        <p class="accesso__sicurezza">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="1"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v2.5"/></svg>
+          <span>Chiave personale, tetto di spesa per utente, documenti che restano nello studio.</span>
+        </p>
+
+        <noscript>
+          <p class="pp-avviso pp-avviso--attenzione accesso__senza-script">Per entrare serve JavaScript: attivalo e ricarica la pagina.</p>
+        </noscript>
+      </div>
+    </div>
+
+    <footer class="accesso__firma">
+      <p>Pierpont è un progetto di <span class="accesso__firma-nome"><em>Marco Cassano</em> · <span class="studio">4MC Advisory</span></span></p>
+    </footer>
+  </main>
+</div>
+
+<!-- Accessi ospite della versione di prova: file che resta sul PC (se manca, si entra solo con l’email) -->
+<script src="assets/js/cassaforte.js"></script>
+<script src="assets/js/accesso.js"></script>
+</body>
+</html>

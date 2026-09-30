@@ -1,0 +1,3205 @@
+/* ==========================================================================
+   PIERPONT by 4MC — sistema di progetto condiviso (sito, accesso, piattaforma)
+   File: assets/css/pierpont.css · versione 2 · 30/09/2026
+   Versione 2: comandi riscritti secondo le note di Marco del 30/9 (SPECIFICHE §2b):
+   meno scatole, più tipografia. Campi a filetto, primario pieno inchiostro,
+   secondari senza bordo, azioni in riga come testo, «Da fare» neutro.
+   Pagina di prova di tutti i comandi: _strumenti/controlli.html
+   ==========================================================================
+
+   CARATTERI — un solo <link> per pagina, con preconnect (niente altro di esterno):
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+   TEMI
+     :root                    Porcellana (chiaro, predefinito)
+     [data-tema="notte"]      Antracite su <html> (piattaforma, tema scuro) o su un qualsiasi contenitore
+     .fascia-notte            Notte blu solo dentro una fascia del sito (applica fondo e testo);
+                              dentro l'app (.app-html) diventa antracite
+     .fascia-antracite        antracite dentro una qualsiasi zona (applica fondo e testo)
+     .fascia-porcellana       torna al chiaro dentro una zona scura
+
+   TOKEN (custom properties, ridefiniti per tema)
+     colori   --pagina --superficie --superficie-2 --testo --testo-2 --testo-3
+              --su-testo (testo su fondo inchiostro: bianco sul chiaro, blu notte sullo scuro)
+              --linea (filetto) --linea-2 (filetto leggero tra righe) --linea-forte (filetto dei campi e del codice, marchio)
+              --accento --accento-forte (premuto) --accento-testo --ghiaccio --su-ghiaccio
+              --ok --ok-fondo --attenzione --attenzione-fondo --attenzione-linea --su-attenzione
+              --errore --errore-fondo --focus --riga-hover (superficie-2 al 60%) --selezione
+              --btn-fondo --btn-fondo-hover --btn-fondo-premuto --btn-testo
+                       (primario: inchiostro sul chiaro, porcellana sul blu)
+              --btn2-bordo (filetto sotto) --btn2-testo --btn2-fondo --btn2-hover (secondario senza scatola)
+              --campo-fondo --campo-bordo --campo-bordo-hover --campo-vuoto (filetti dei campi)
+              --interruttore-spento --interruttore-pomello --ombra-menu
+     caratteri --font-display (Newsreader) --font-testo (Hanken Grotesk) --font-mono (IBM Plex Mono) --font-simboli
+     spazi    --s-1 4 · --s-2 8 · --s-3 12 · --s-4 16 · --s-5 24 · --s-6 32 · --s-7 48 · --s-8 64 · --s-9 96 · --s-10 128
+     misure   --larghezza-max 1248px · --margine (bordo pagina, 24→96) · --raggio 2px · --raggio-3 3px
+              --h-controllo 44px · --h-controllo-piccolo 36px · --h-controllo-grande 52px · --h-campo 48px
+              --rientro-riga 12px (quanto il fondo al passaggio sborda dalle righe cliccabili)
+     moto     --durata-breve 150ms · --durata-rivela 600ms · --curva
+     livelli  --z-testata 40 · --z-menu 50 · --z-cassetto 60
+
+   MARCHIO (SVG in linea, fill="currentColor", aria-hidden="true")
+     segno standard (> 32 px):
+       <svg class="pp-logo__segno" viewBox="0 0 100 100" aria-hidden="true"><polygon points="8,6 48.6,40 48.6,48.4 40,48.4"/><polygon points="92,6 51.4,40 51.4,48.4 60,48.4"/><polygon points="5,95 48.6,60 48.6,51.6 40,51.6"/><polygon points="95,95 51.4,60 51.4,51.6 60,51.6"/></svg>
+     segno piccolo (<= 32 px, vuoto allargato):
+       <svg class="pp-logo__segno" viewBox="0 0 100 100" aria-hidden="true"><polygon points="8,6 47,40 47,46.5 40,46.5"/><polygon points="92,6 53,40 53,46.5 60,46.5"/><polygon points="5,95 47,60 47,53.5 40,53.5"/><polygon points="95,95 53,60 53,53.5 60,53.5"/></svg>
+     composizione:
+       <a class="pp-logo" href="…" aria-label="Pierpont by 4MC, pagina iniziale">[segno]<span class="pp-logo__nome">PIERPONT</span><span class="pp-logo__firma">BY 4MC</span></a>
+       (il filetto tra nome e firma lo disegna il CSS: non aggiungere elementi)
+     varianti: .pp-logo--piccolo 22 px · .pp-logo--grande 40 px · .pp-logo--verticale (segno sopra il nome)
+               .pp-logo--accento (segno cobalto)
+
+   ELENCO DELLE CLASSI
+   Base e accessibilità
+     .pp-solo-lettori         nasconde alla vista, resta per i lettori di schermo
+     .pp-salta                link «Vai al contenuto», visibile solo con il fuoco da tastiera
+     .pp-non-stampare         escluso dalla stampa
+     .pp-js (su <html>)       facoltativa: nasconde subito anche i .pp-rivela della prima schermata
+   Tipografia
+     .pp-display              titolo d'apertura, Newsreader 300, 96 desktop / 48-52 telefono
+     .pp-h1                   64 · .pp-h2 44 · .pp-h3 32 · .pp-h4 24 (Newsreader; <em> dentro = corsivo)
+     .pp-testo                corpo 16/1.6 · .pp-testo--grande 18/1.65
+     .pp-piccolo              14/1.5
+     .pp-etichetta            etichetta di sezione 13, peso 500, colore --testo-3 (mai maiuscolo spaziato)
+     .pp-occhiello            etichetta cobalto con filetto di 32 px davanti (come nell'apertura)
+     .pp-mono                 IBM Plex Mono: codici, ISIN, orari, sha256, ticker, nomi di file
+     .pp-numeri               cifre tabellari allineate (tabular-nums)
+     .pp-cifra                numero in Newsreader 300 (26 px) · .pp-cifra--grande 44 px
+     .pp-corsivo              corsivo Newsreader di enfasi
+     .pp-prosa                testo corrente: spazio tra paragrafi, link sottolineati
+     .pp-tono-2 / .pp-tono-3 / .pp-tono-accento / .pp-tono-ok / .pp-tono-attenzione / .pp-tono-errore   colore del testo
+   Impaginazione
+     .pp-contenitore          larghezza massima 1248 centrata, margini laterali --margine
+     .pp-contenitore--stretto 880 · .pp-contenitore--pieno senza massimo (piattaforma)
+     .pp-sezione              fascia verticale 128/96/64 · --filetto (riga sopra) · --superficie (fondo bianco)
+     .pp-griglia-12           griglia a 12 colonne (sotto 900 px: 6 colonne)
+     .pp-col-1 … .pp-col-12   ampiezza in colonne (sotto 900 px diventano piene)
+     .pp-col-da-2 … .pp-col-da-7   colonna di partenza (solo desktop)
+     .pp-col-m-2 / .pp-col-m-3 / .pp-col-m-6   ampiezza sotto 900 px (terzo / metà / piena)
+     .pp-pila                 colonna flessibile con spazio (--spazio, 16 px)
+     .pp-fila                 riga flessibile che va a capo, con spazio (--spazio, 16 px)
+     .pp-filetto              riga di 1 px · --forte (colore testo) · --verticale
+     .pp-angoli               quattro angoli di registro (--angoli-colore, --angoli-lato)
+   Bottoni (niente scatole a contorno: pieno inchiostro, oppure solo testo)
+     .pp-btn                  base: <button> o <a>, 44 px, angoli 2 px, Hanken 15/500
+     .pp-btn--primario        pieno inchiostro #0B1026, testo bianco, 52 px, 0 28; al passaggio cobalto,
+                              premuto cobalto scuro. Sul blu (tema notte / .fascia-notte): porcellana
+                              #F4F5F7 con testo blu notte, al passaggio #DCE6FF
+     .pp-btn--secondario      senza bordo né fondo: testo --testo con filetto 1 px 6 px sotto;
+                              al passaggio il filetto si riempie di cobalto da sinistra («Leggi il metodo»)
+     .pp-btn--testo           come il secondario ma senza altezza minima (dentro il testo o nei piedi)
+     .pp-btn--tenue           azione di servizio quieta: testo --testo-2, al passaggio velo --superficie-2
+     .pp-btn--piccolo 36 · .pp-btn--grande 52 · .pp-btn--pieno largo 100% (nei moduli)
+     .pp-btn--icona           icona nuda 20 px in un'area invisibile 40×40 (uguale a .pp-icona-btn)
+     [aria-busy="true"]       sul bottone: in attesa, filo che scorre sotto
+     .pp-azione               azione in riga («Entra», «Salva», «Apri», «Vedi tutti»): testo cobalto 14/500,
+                              sottolineato solo al passaggio; <a> o <button>
+     .pp-azione--tenue        in grigio (--testo-2), es. «Annulla»
+     .pp-azione--estesa       l'area cliccabile si allarga a tutta la riga che la contiene
+                              (la riga deve essere position: relative: .pp-riga-cliccabile, .pp-dafare__voce)
+     .pp-icona-btn            icona nuda 20 px (tratto 1,5) in un'area 40×40 invisibile; al passaggio
+                              un cerchio velato --superficie-2; aria-pressed / aria-expanded = cerchio fisso
+     .pp-icona-btn--piccolo   area 32×32, icona 18 px
+     .pp-link                 link sottolineato cobalto · --tenue (grigio) · --nudo (sottolineato al passaggio)
+     .pp-tasto                tasto di scorciatoia (<kbd>): «Ctrl K», senza cornice
+   Moduli (campi a filetto: nessuna scatola)
+     .pp-campo                contenitore di un campo (etichetta, input, aiuto, errore); al fuoco l'etichetta
+                              diventa cobalto
+     .pp-campo__testa         riga etichetta + link a destra («Password dimenticata?»)
+     .pp-campo__etichetta     <label> Hanken 13/500 --testo-2
+     .pp-campo__input         <input>, <textarea>, <select>: solo il filetto di fondo 1 px --linea-forte,
+                              48 px, testo 17 px; al fuoco il filetto diventa 2 px cobalto (150 ms)
+     .pp-campo__gruppo        input con comando nudo a destra · .pp-campo__azione l'icona (occhio), senza cornice
+     .pp-campo__scelta        involucro di <select> con freccia disegnata
+     .pp-campo__aiuto         suggerimento sotto il campo
+     .pp-campo__errore        messaggio d'errore breve con ✕ (collegarlo con aria-describedby)
+     .pp-campo--errore        stato d'errore: filetto rosso (oppure aria-invalid="true" sull'input)
+     .pp-campo--compatto      campo da 40 px, testo 15
+     .pp-spunta               <label> con <input type="checkbox|radio"> dentro: casella 18 px, bordo 1,5 px
+                              --testo-2, angoli 3; spuntata = fondo inchiostro con segno bianco (SVG);
+                              la scelta singola è tonda: anello inchiostro con punto pieno
+     .pp-interruttore         <button role="switch" aria-checked> · .pp-interruttore__binario 36×20, pomello 16
+                              .pp-interruttore--esteso (etichetta a sinistra, interruttore in fondo a destra)
+     .pp-codice               <fieldset> del codice a 6 cifre · .pp-codice__caselle la riga · .pp-codice__cifra
+                              una cifra: Newsreader 34 su filetto 2 px, 14 px di spazio
+                              .pp-codice__trattino il puntino tra la 3ª e la 4ª · .pp-codice--errore
+                              placeholder=" " su ogni cifra: filetto --linea-forte vuota, --testo piena
+                              (anche .piena), cobalto quella attiva (fuoco o .attiva)
+   Stati, distintivi, avvisi
+     .pp-stato                stato = simbolo + parola + colore, mai a capo, mai su fondo pieno;
+                              il simbolo lo mette il CSS:
+                              --ok ✓ · --attenzione ▲ · --errore ✕ · --corso ◐ · --coda ○ · --nota •
+                              .pp-stato--piccolo (12 px) · .pp-stato--pastiglia (vecchio nome: ora 13 px, senza fondo)
+                              se nell'HTML c'è già .pp-stato__simbolo, il CSS non aggiunge il suo
+     .pp-punto                pallino di stato (colore del testo) · --ok --attenzione --errore --accento · --vivo (pulsa)
+     .pp-badge                distintivo 20 px · --inchiostro (conteggio: cerchio inchiostro, porcellana sul blu)
+                              --attenzione (vecchio nome del conteggio Da fare: ora uguale a --inchiostro, niente ambra)
+                              --accento («esempio») --pieno (cobalto) --ok --errore --contorno (versione «v05»)
+     .pp-avviso               riga d'avviso senza scatola: filetto a sinistra + simbolo · --ok --attenzione --errore --info
+   Contenitori, titoli, righe
+     .pp-pannello             raggruppamento: superficie bianca SENZA bordo sulla pagina porcellana;
+                              un pannello dentro un pannello si appiattisce (mai scatola nella scatola)
+     .pp-pannello__testa / __titolo / __nota / __piede   parti del pannello (la testa ha il filetto sotto)
+     .pp-pannello--incassato  fondo pagina · --vuoto (senza padding) · --attenzione (vecchio nome: ora neutro)
+     .pp-sezione-titolo       titolo di gruppo: Newsreader 22 con filetto sotto; dentro può avere un <h2>,
+                              una .pp-sezione-titolo__nota e una .pp-azione a destra
+     .pp-lista                <ul>/<ol> senza punti per le righe qui sotto
+     .pp-riga-cliccabile      riga intera cliccabile (<a> o <button>), senza scatola: filetto sotto,
+                              al passaggio velo --riga-hover e compare l'azione cobalto; anello al fuoco
+                              __testo (colonna che si allarga) · __titolo 16 · __nota 14 --testo-2
+                              __valore (a destra, cifre tabellari) · __azione (cobalto, appare al passaggio)
+     .pp-dafare               blocco «Da fare» neutro (nessun fondo ambra, né chiaro né scuro)
+                              __testa · __titolo (Newsreader) · __conta (cerchio inchiostro) · __nota
+                              __lista <ol> · __voce (numerata 01 02 03 in automatico, Newsreader --testo-3)
+                              __numero (facoltativo, se si vuole scrivere il numero a mano)
+                              __corpo · __testo 16 --testo · __contesto 14 --testo-2
+                              l'azione è una .pp-azione (o .pp-dafare__azione) nella terza colonna;
+                              con .pp-azione--estesa tutta la voce diventa cliccabile
+     .pp-valori               <dl> di coppie etichetta/valore con filetti · --chiuso (filetto anche in fondo)
+     .pp-tabella              tabella dati · th.num / td.num a destra con cifre tabellari
+     .pp-tabella__forte       cella principale (nome) · .pp-tabella__sotto seconda riga piccola
+     .pp-tabella--nuda (dentro un pannello) · --compatta · --attiva (righe cliccabili) · tr.selezionata
+     .pp-tabella-scorri       involucro che scorre in orizzontale sul telefono
+     .pp-barra                barra d'avanzamento (--valore: 36.8%) · .pp-barra__pieno · --accento --attenzione --ok · --sottile
+     .pp-passi                avanzamento a tappe (--passi: 4) · .pp-passo --fatto --corrente --mano --attesa · .pp-passo__nome
+     .pp-schede               schede · .pp-schede__voce con aria-selected="true" o aria-current="page"
+     .pp-menu                 menu galleggiante (unica ombra ammessa) · __voce · __titolo · __separatore
+   Movimento
+     .pp-rivela               appare salendo di 12 px in 600 ms; lo script aggiunge .visibile (una volta sola)
+                              ritardo facoltativo: style="--ritardo: 120ms"
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Token — Porcellana (chiaro, predefinito)
+   -------------------------------------------------------------------------- */
+:root,
+.fascia-porcellana {
+  color-scheme: light;
+
+  --pagina: #F4F5F7;
+  --superficie: #FFFFFF;
+  --superficie-2: #E8EBF0;
+  --testo: #0B1026;
+  --testo-2: #4A5064;
+  --testo-3: #62687C;
+  --su-testo: #FFFFFF;
+  --linea: #DADDE4;
+  --linea-2: #E8EBF0;
+  --linea-forte: #AEB3C0;
+
+  --accento: #1F35C9;
+  --accento-forte: #182AA3;
+  --accento-testo: #FFFFFF;
+  --ghiaccio: #DCE6FF;
+  --su-ghiaccio: #1F35C9;
+
+  --ok: #1E7A4F;
+  --ok-fondo: #E8F4EE;
+  --attenzione: #8A5A00;
+  --attenzione-fondo: #F6EEDC;
+  --attenzione-linea: #E6D3A8;
+  --su-attenzione: #FFFFFF;
+  --errore: #B4233C;
+  --errore-fondo: #F9E6E9;
+
+  --focus: #1F35C9;
+  --riga-hover: color-mix(in srgb, var(--superficie-2) 60%, transparent);
+  --selezione: #DCE6FF;
+
+  /* primario: inchiostro pieno, al passaggio cobalto */
+  --btn-fondo: #0B1026;
+  --btn-fondo-hover: #1F35C9;
+  --btn-fondo-premuto: #182AA3;
+  --btn-testo: #FFFFFF;
+  /* secondario: solo testo e filetto */
+  --btn2-bordo: #0B1026;
+  --btn2-testo: #0B1026;
+  --btn2-fondo: transparent;
+  --btn2-hover: #1F35C9;
+
+  /* campi: solo il filetto di fondo */
+  --campo-fondo: transparent;
+  /* filetto dei campi: almeno 3:1 sul fondo (WCAG, confini dei comandi) */
+  --campo-bordo: #858B9B;
+  --campo-bordo-hover: #676D7E;
+  --campo-vuoto: #858B9B;
+
+  --interruttore-spento: #C7CCD6;
+  --interruttore-pomello: #FFFFFF;
+
+  --ombra-menu: 0 18px 40px -18px rgba(11, 16, 38, .24), 0 2px 6px rgba(11, 16, 38, .06);
+}
+
+/* Token che non cambiano con il tema */
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-testo: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-simboli: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", "DejaVu Sans", sans-serif;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  --larghezza-max: 1248px;
+  --margine: clamp(24px, 6.667vw, 96px);
+  --raggio: 2px;
+  --raggio-3: 3px;
+
+  --h-controllo: 44px;
+  --h-controllo-piccolo: 36px;
+  --h-controllo-grande: 52px;
+  --h-campo: 48px;
+  --rientro-riga: 12px;
+
+  --durata-breve: 150ms;
+  --durata-rivela: 600ms;
+  --curva: cubic-bezier(.2, .7, .2, 1);
+
+  --z-testata: 40;
+  --z-menu: 50;
+  --z-cassetto: 60;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Token — Notte blu (solo le fasce scure del sito pubblico)
+   Dal 30/9 sera il tema scuro della piattaforma è Antracite (blocco 2b qui sotto):
+   il blu notte resta nelle due fasce del sito (#vedetta, #abbinamenti).
+   -------------------------------------------------------------------------- */
+.fascia-notte {
+  color-scheme: dark;
+
+  --pagina: #0A1030;
+  --superficie: #0F1740;
+  --superficie-2: #16204F;
+  --testo: #EEF1FA;
+  --testo-2: #B7BFDA;
+  --testo-3: #8C95B8;
+  --su-testo: #0A1030;
+  --linea: #243063;
+  --linea-2: #1C2757;
+  --linea-forte: #4A568F;
+
+  --accento: #6E86FF;
+  --accento-forte: #8FA2FF;
+  --accento-testo: #0A1030;
+  --ghiaccio: #1A2458;
+  --su-ghiaccio: #C3CEFF;
+
+  --ok: #5FD39A;
+  --ok-fondo: #15304A;
+  --attenzione: #F2C265;
+  --attenzione-fondo: #2B2B45;
+  --attenzione-linea: #5B5048;
+  --su-attenzione: #0A1030;
+  --errore: #FF8A8A;
+  --errore-fondo: #31274A;
+
+  --focus: #6E86FF;
+  --riga-hover: color-mix(in srgb, var(--superficie-2) 60%, transparent);
+  --selezione: #2A3A8F;
+
+  /* primario sul blu = porcellana con testo blu notte */
+  --btn-fondo: #F4F5F7;
+  --btn-fondo-hover: #DCE6FF;
+  --btn-fondo-premuto: #C6D3FA;
+  --btn-testo: #0A1030;
+  --btn2-bordo: #EEF1FA;
+  --btn2-testo: #EEF1FA;
+  --btn2-fondo: transparent;
+  --btn2-hover: #6E86FF;
+
+  --campo-fondo: transparent;
+  --campo-bordo: #4A568F;
+  --campo-bordo-hover: #7883B5;
+  --campo-vuoto: #4A568F;
+
+  --interruttore-spento: #2E3A72;
+  --interruttore-pomello: #B7BFDA;
+
+  --ombra-menu: 0 20px 48px -18px rgba(2, 5, 20, .7), 0 2px 8px rgba(2, 5, 20, .35);
+}
+
+/* --------------------------------------------------------------------------
+   2b. Token — Antracite (tema scuro della piattaforma, scelta di Marco del 30/9)
+   Grigio carbone con un filo di freddo, mai nero puro; il cobalto chiaro fa
+   da lancette. Dentro l'app anche le fasce scure (.fascia-notte, per esempio
+   la costellazione di Mercato) diventano antracite.
+   Contrasti (WCAG): --testo-3 4,8:1 e --accento 5,0:1 anche su --superficie-2.
+   -------------------------------------------------------------------------- */
+[data-tema="notte"],
+.app-html .fascia-notte,
+.fascia-antracite {
+  color-scheme: dark;
+
+  --pagina: #1E2024;
+  --superficie: #26292E;
+  --superficie-2: #2F3339;
+  --testo: #EDEEF0;
+  --testo-2: #BCC0C7;
+  --testo-3: #9A9FA9;
+  --su-testo: #1E2024;
+  --linea: #3A3E45;
+  --linea-2: #31353B;
+  --linea-forte: #5C616A;
+
+  --accento: #8C9CFF;
+  --accento-forte: #A9B5FF;
+  --accento-testo: #1E2024;
+  --ghiaccio: #2D3456;
+  --su-ghiaccio: #CDD5FF;
+
+  --ok: #66D19E;
+  --ok-fondo: #213A30;
+  --attenzione: #EFC36B;
+  --attenzione-fondo: #3A3427;
+  --attenzione-linea: #6A5A3B;
+  --su-attenzione: #1E2024;
+  --errore: #FF8E8E;
+  --errore-fondo: #3E282B;
+
+  --focus: #8C9CFF;
+  --riga-hover: color-mix(in srgb, var(--superficie-2) 60%, transparent);
+  --selezione: #3B4682;
+
+  /* primario sull'antracite = porcellana con testo antracite */
+  --btn-fondo: #F4F5F7;
+  --btn-fondo-hover: #DCE6FF;
+  --btn-fondo-premuto: #C6D3FA;
+  --btn-testo: #1E2024;
+  --btn2-bordo: #EDEEF0;
+  --btn2-testo: #EDEEF0;
+  --btn2-fondo: transparent;
+  --btn2-hover: #8C9CFF;
+
+  --campo-fondo: transparent;
+  --campo-bordo: #7A7F89;
+  --campo-bordo-hover: #9A9FA9;
+  --campo-vuoto: #7A7F89;
+
+  --interruttore-spento: #464B53;
+  --interruttore-pomello: #BCC0C7;
+
+  --ombra-menu: 0 20px 48px -18px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .28);
+}
+
+/* La fascia applica anche fondo e colore del testo */
+.fascia-notte,
+.fascia-antracite,
+.fascia-porcellana {
+  background-color: var(--pagina);
+  color: var(--testo);
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--pp-scorri-sopra, 24px);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--pagina);
+  color: var(--testo);
+  font-family: var(--font-testo);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--durata-breve) ease, color var(--durata-breve) ease;
+}
+
+:where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, pre) {
+  margin: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  font-weight: inherit;
+  font-size: inherit;
+  text-wrap: balance;
+}
+
+:where(p) {
+  text-wrap: pretty;
+}
+
+:where(ul[class], ol[class]) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(img, svg, video, canvas, picture) {
+  display: block;
+  max-width: 100%;
+}
+
+:where(img, video) {
+  height: auto;
+}
+
+:where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+:where(button) {
+  cursor: pointer;
+}
+
+:where(fieldset) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+:where(legend) {
+  padding: 0;
+}
+
+:where(table) {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+:where(a) {
+  color: var(--accento);
+  text-decoration: none;
+  transition: color var(--durata-breve) ease;
+}
+
+:where(a:hover) {
+  color: var(--testo);
+}
+
+:where(hr) {
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--linea);
+}
+
+:where(abbr[title]) {
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+:where(strong, b) {
+  font-weight: 600;
+}
+
+:where(code, kbd, samp) {
+  font-family: var(--font-mono);
+  font-size: .92em;
+}
+
+::placeholder {
+  color: var(--testo-3);
+  opacity: 1;
+}
+
+::selection {
+  background: var(--selezione);
+  color: var(--testo);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Scorrimento dolce solo se il movimento è gradito */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Fuoco da tastiera: anello 2 px, scostato 2 px
+   -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Accessibilità
+   -------------------------------------------------------------------------- */
+.pp-solo-lettori {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.pp-salta {
+  position: absolute;
+  left: var(--s-4);
+  top: var(--s-4);
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--testo);
+  color: var(--su-testo);
+  border-radius: var(--raggio);
+  font-size: .875rem;
+  font-weight: 500;
+  transform: translateY(-160%);
+  transition: transform var(--durata-breve) ease;
+}
+
+.pp-salta:hover {
+  color: var(--su-testo);
+}
+
+.pp-salta:focus-visible {
+  transform: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Tipografia
+   -------------------------------------------------------------------------- */
+.pp-display,
+.pp-h1,
+.pp-h2,
+.pp-h3,
+.pp-h4,
+.pp-cifra {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  color: var(--testo);
+}
+
+/* Apertura: 96/88 a 1440, circa 50 al telefono */
+.pp-display {
+  font-weight: 300;
+  font-size: clamp(3rem, 2rem + 4.45vw, 6rem);
+  line-height: .92;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+
+.pp-h1 {
+  font-weight: 300;
+  font-size: clamp(2.5rem, 1.75rem + 2.6vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+.pp-h2 {
+  font-weight: 300;
+  font-size: clamp(2rem, 1.55rem + 1.35vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -.018em;
+  text-wrap: balance;
+}
+
+.pp-h3 {
+  font-weight: 400;
+  font-size: clamp(1.625rem, 1.4rem + .75vw, 2rem);
+  line-height: 1.18;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+
+.pp-h4 {
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  letter-spacing: -.005em;
+}
+
+/* Corsivo di enfasi dentro i titoli: «in grande.» */
+.pp-display em,
+.pp-h1 em,
+.pp-h2 em,
+.pp-h3 em,
+.pp-h4 em,
+.pp-corsivo {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.pp-testo {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.pp-testo--grande {
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.pp-piccolo {
+  font-size: .875rem;
+  line-height: 1.5;
+}
+
+/* Etichette: frase normale, mai maiuscolo spaziato */
+.pp-etichetta {
+  display: inline-block;
+  font-family: var(--font-testo);
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .04em;
+  color: var(--testo-3);
+}
+
+.pp-occhiello {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-testo);
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .03em;
+  color: var(--accento);
+}
+
+.pp-occhiello::before {
+  content: "";
+  flex: none;
+  width: 32px;
+  height: 1px;
+  background: currentColor;
+}
+
+.pp-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: .9em;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-numeri {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pp-cifra {
+  font-weight: 300;
+  font-size: 1.625rem;
+  line-height: 1;
+  letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pp-cifra--grande {
+  font-size: 2.75rem;
+}
+
+.pp-prosa > * + * {
+  margin-top: 1em;
+}
+
+.pp-prosa a {
+  color: var(--accento);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .22em;
+}
+
+.pp-tono-2 { color: var(--testo-2); }
+.pp-tono-3 { color: var(--testo-3); }
+.pp-tono-accento { color: var(--accento); }
+.pp-tono-ok { color: var(--ok); }
+.pp-tono-attenzione { color: var(--attenzione); }
+.pp-tono-errore { color: var(--errore); }
+
+@media (max-width: 600px) {
+  .pp-display {
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+
+  .pp-h4 {
+    font-size: 1.375rem;
+  }
+
+  .pp-testo--grande {
+    font-size: 1.0625rem;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Impaginazione
+   -------------------------------------------------------------------------- */
+.pp-contenitore {
+  width: 100%;
+  max-width: calc(var(--larghezza-max) + 2 * var(--margine));
+  margin-inline: auto;
+  padding-inline: var(--margine);
+}
+
+.pp-contenitore--stretto {
+  max-width: calc(880px + 2 * var(--margine));
+}
+
+.pp-contenitore--pieno {
+  max-width: none;
+}
+
+.pp-sezione {
+  padding-block: clamp(64px, 8.9vw, 128px);
+}
+
+.pp-sezione--filetto {
+  border-top: 1px solid var(--linea);
+}
+
+.pp-sezione--superficie {
+  background-color: var(--superficie);
+}
+
+.pp-griglia-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--colonna-spazio, 32px);
+  row-gap: var(--riga-spazio, 32px);
+}
+
+.pp-col-1 { grid-column: span 1; }
+.pp-col-2 { grid-column: span 2; }
+.pp-col-3 { grid-column: span 3; }
+.pp-col-4 { grid-column: span 4; }
+.pp-col-5 { grid-column: span 5; }
+.pp-col-6 { grid-column: span 6; }
+.pp-col-7 { grid-column: span 7; }
+.pp-col-8 { grid-column: span 8; }
+.pp-col-9 { grid-column: span 9; }
+.pp-col-10 { grid-column: span 10; }
+.pp-col-11 { grid-column: span 11; }
+.pp-col-12 { grid-column: 1 / -1; }
+
+/* Partenza in colonna (dopo le ampiezze, così vince) */
+.pp-col-da-2 { grid-column-start: 2; }
+.pp-col-da-3 { grid-column-start: 3; }
+.pp-col-da-4 { grid-column-start: 4; }
+.pp-col-da-5 { grid-column-start: 5; }
+.pp-col-da-6 { grid-column-start: 6; }
+.pp-col-da-7 { grid-column-start: 7; }
+
+@media (max-width: 1100px) {
+  .pp-griglia-12 {
+    column-gap: var(--colonna-spazio-medio, 24px);
+  }
+}
+
+@media (max-width: 899px) {
+  .pp-griglia-12 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: var(--riga-spazio-telefono, 24px);
+  }
+
+  .pp-griglia-12 > [class*="pp-col-"] {
+    grid-column: 1 / -1;
+  }
+
+  .pp-griglia-12 > .pp-col-m-2 { grid-column: span 2; }
+  .pp-griglia-12 > .pp-col-m-3 { grid-column: span 3; }
+  .pp-griglia-12 > .pp-col-m-6 { grid-column: 1 / -1; }
+}
+
+.pp-pila {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spazio, 16px);
+}
+
+.pp-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio, 16px);
+}
+
+.pp-filetto {
+  display: block;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--linea);
+}
+
+.pp-filetto--forte {
+  background: var(--testo);
+}
+
+.pp-filetto--verticale {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  align-self: center;
+}
+
+/* Angoli di registro: quattro squadrette sottili agli angoli */
+.pp-angoli {
+  position: relative;
+}
+
+.pp-angoli::before {
+  --c: var(--angoli-colore, var(--accento));
+  --l: var(--angoli-lato, 28px);
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) left top / var(--l) 1px,
+    linear-gradient(var(--c), var(--c)) left top / 1px var(--l),
+    linear-gradient(var(--c), var(--c)) right top / var(--l) 1px,
+    linear-gradient(var(--c), var(--c)) right top / 1px var(--l),
+    linear-gradient(var(--c), var(--c)) left bottom / var(--l) 1px,
+    linear-gradient(var(--c), var(--c)) left bottom / 1px var(--l),
+    linear-gradient(var(--c), var(--c)) right bottom / var(--l) 1px,
+    linear-gradient(var(--c), var(--c)) right bottom / 1px var(--l);
+  background-repeat: no-repeat;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Marchio
+   -------------------------------------------------------------------------- */
+.pp-logo {
+  --logo-segno: 26px;
+  --logo-nome: 15px;
+  --logo-firma: 11px;
+  --logo-spazio: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--logo-spazio);
+  color: var(--testo);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+a.pp-logo:hover {
+  color: var(--testo);
+}
+
+.pp-logo__segno {
+  flex: none;
+  width: var(--logo-segno);
+  height: var(--logo-segno);
+  fill: currentColor;
+}
+
+.pp-logo__nome {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--logo-nome);
+  letter-spacing: .28em;
+  margin-right: -.28em; /* toglie la spaziatura dopo l'ultima T */
+  line-height: 1;
+}
+
+/* Filetto sottile + «BY 4MC» */
+.pp-logo__firma {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--logo-spazio);
+  font-family: var(--font-testo);
+  font-weight: 600;
+  font-size: var(--logo-firma);
+  letter-spacing: .16em;
+  color: var(--testo-2);
+  line-height: 1;
+}
+
+.pp-logo__firma::before {
+  content: "";
+  flex: none;
+  width: 1px;
+  height: calc(var(--logo-nome) * 1.05);
+  background: var(--linea-forte);
+}
+
+.pp-logo--accento .pp-logo__segno {
+  color: var(--accento);
+}
+
+.pp-logo--piccolo {
+  --logo-segno: 22px;
+  --logo-nome: 13px;
+  --logo-firma: 10px;
+  --logo-spazio: 11px;
+}
+
+.pp-logo--grande {
+  --logo-segno: 40px;
+  --logo-nome: 24px;
+  --logo-firma: 12px;
+  --logo-spazio: 20px;
+}
+
+/* Composizione verticale: segno, nome, filetto corto, firma */
+.pp-logo--verticale {
+  flex-direction: column;
+  gap: calc(var(--logo-spazio) * 1.2);
+  text-align: center;
+}
+
+.pp-logo--verticale .pp-logo__nome {
+  margin-right: 0;
+  padding-left: .28em; /* ricentra le lettere spaziate */
+}
+
+.pp-logo--verticale .pp-logo__firma {
+  flex-direction: column;
+  gap: calc(var(--logo-spazio) * .9);
+  padding-left: .16em;
+}
+
+.pp-logo--verticale .pp-logo__firma::before {
+  width: 24px;
+  height: 1px;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Bottoni — niente scatole a contorno
+   Primario: un blocco pieno d'inchiostro. Secondario: testo con filetto.
+   -------------------------------------------------------------------------- */
+.pp-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--h-controllo);
+  padding: 0 22px;
+  font-family: var(--font-testo);
+  font-size: .9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: .005em;
+  color: var(--testo);
+  background: transparent;
+  border: 0;
+  border-radius: var(--raggio);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--durata-breve) ease,
+    color var(--durata-breve) ease,
+    background-size var(--durata-breve) var(--curva);
+}
+
+.pp-btn svg:not([width]) {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+
+/* Primario: inchiostro pieno (porcellana sul blu) */
+.pp-btn--primario {
+  min-height: var(--h-controllo-grande);
+  padding: 0 28px;
+  background: var(--btn-fondo);
+  color: var(--btn-testo);
+}
+
+a.pp-btn--primario:hover,
+a.pp-btn--primario:visited {
+  color: var(--btn-testo);
+}
+
+/* Secondario e testo: nessun bordo, nessun fondo; un filetto 6 px sotto le lettere.
+   Il filetto è un ::after con due strati: la riga ferma e il cobalto che la riempie. */
+.pp-btn--secondario,
+.pp-btn--testo {
+  padding: 0;
+  border-radius: 0;
+  background: var(--btn2-fondo);
+  color: var(--btn2-testo);
+}
+
+.pp-btn--secondario {
+  min-height: var(--h-controllo);
+}
+
+.pp-btn--testo {
+  min-height: 0;
+  padding: 2px 0 8px;
+}
+
+.pp-btn--secondario::after,
+.pp-btn--testo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--btn2-hover), var(--btn2-hover)) left center / 0% 100% no-repeat,
+    var(--btn2-bordo);
+  transition: background-size calc(var(--durata-breve) * 2) var(--curva);
+}
+
+/* 6 px sotto la riga di testo, centrata nell'altezza del bottone */
+.pp-btn--secondario::after {
+  top: calc(50% + .6em + 6px);
+}
+
+.pp-btn--testo::after {
+  bottom: 1px;
+}
+
+/* Tenue: azione di servizio, testo grigio, velo al passaggio (nessun bordo) */
+.pp-btn--tenue {
+  padding: 0 14px;
+  color: var(--testo-2);
+  background: transparent;
+}
+
+@media (hover: hover) {
+  .pp-btn--primario:hover {
+    background: var(--btn-fondo-hover);
+    color: var(--btn-testo);
+  }
+
+  .pp-btn--secondario:hover,
+  .pp-btn--testo:hover {
+    color: var(--btn2-hover);
+  }
+
+  .pp-btn--secondario:hover::after,
+  .pp-btn--testo:hover::after {
+    background-size: 100% 100%, auto;
+  }
+
+  .pp-btn--tenue:hover {
+    background: var(--riga-hover);
+    color: var(--testo);
+  }
+}
+
+.pp-btn--primario:active {
+  background: var(--btn-fondo-premuto);
+  color: var(--btn-testo);
+}
+
+.pp-btn--secondario:active,
+.pp-btn--testo:active {
+  color: var(--btn2-hover);
+}
+
+.pp-btn--tenue:active {
+  background: var(--superficie-2);
+}
+
+/* Anello di fuoco: sul testo sottolineato resta stretto alle lettere */
+.pp-btn--secondario:focus-visible,
+.pp-btn--testo:focus-visible {
+  outline-offset: 4px;
+  border-radius: var(--raggio);
+}
+
+/* Misure */
+.pp-btn--piccolo {
+  min-height: var(--h-controllo-piccolo);
+  padding: 0 16px;
+  gap: 8px;
+  font-size: .8125rem;
+}
+
+.pp-btn--secondario.pp-btn--piccolo,
+.pp-btn--testo.pp-btn--piccolo {
+  padding-inline: 0;
+}
+
+.pp-btn--grande {
+  min-height: var(--h-controllo-grande);
+  font-size: .9375rem;
+}
+
+.pp-btn--grande:not(.pp-btn--secondario, .pp-btn--testo) {
+  padding: 0 28px;
+}
+
+.pp-btn--pieno {
+  display: flex;
+  width: 100%;
+  white-space: normal;
+}
+
+/* Bottone a icona: icona nuda, area invisibile 40×40, cerchio velato al passaggio */
+.pp-btn--icona {
+  width: 40px;
+  min-height: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--testo-2);
+}
+
+.pp-btn--icona.pp-btn--piccolo {
+  width: 32px;
+  min-height: 32px;
+  height: 32px;
+}
+
+.pp-btn--icona svg:not([width]) {
+  width: 20px;
+  height: 20px;
+}
+
+.pp-btn--icona.pp-btn--piccolo svg:not([width]) {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) {
+  .pp-btn--icona:not(.pp-btn--primario):hover {
+    background: var(--superficie-2);
+    color: var(--testo);
+  }
+}
+
+/* Disattivato */
+.pp-btn:disabled,
+.pp-btn[aria-disabled="true"] {
+  opacity: .4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* In attesa: un filo che scorre sotto il bottone */
+.pp-btn[aria-busy="true"] {
+  overflow: hidden;
+  cursor: progress;
+}
+
+/* Un binario tenue per tutta la larghezza e una luce che lo percorre */
+.pp-btn--primario[aria-busy="true"]::after,
+.pp-btn--tenue[aria-busy="true"]::after,
+.pp-btn--icona[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background:
+    linear-gradient(90deg, transparent, currentColor 50%, transparent) -70% 0 / 40% 100% no-repeat,
+    color-mix(in srgb, currentColor 22%, transparent);
+  animation: pp-avanza 1.4s var(--curva) infinite;
+}
+
+/* Secondario in attesa: il suo filetto pulsa */
+.pp-btn--secondario[aria-busy="true"],
+.pp-btn--testo[aria-busy="true"] {
+  overflow: visible;
+}
+
+.pp-btn--secondario[aria-busy="true"]::after,
+.pp-btn--testo[aria-busy="true"]::after {
+  animation: pp-respira 1.3s ease-in-out infinite;
+}
+
+@keyframes pp-avanza {
+  from { background-position: -70% 0, 0 0; }
+  to { background-position: 170% 0, 0 0; }
+}
+
+@keyframes pp-respira {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .25; }
+}
+
+/* Sul telefono i comandi piccoli restano comodi da toccare */
+@media (pointer: coarse) {
+  .pp-btn--piccolo {
+    min-height: 40px;
+  }
+
+  .pp-btn--icona.pp-btn--piccolo {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Azioni in riga, bottoni a icona, link e tasti
+   -------------------------------------------------------------------------- */
+
+/* Azione in riga: «Entra», «Salva», «Apri», «Vedi tutti». Solo testo cobalto. */
+.pp-azione {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 0;
+  font-family: var(--font-testo);
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: .005em;
+  color: var(--accento);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--durata-breve) ease, text-decoration-color var(--durata-breve) ease;
+}
+
+.pp-azione svg:not([width]) {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.pp-azione:hover,
+.pp-azione:focus-visible {
+  color: var(--accento);
+  text-decoration-color: currentColor;
+}
+
+.pp-azione:active {
+  color: var(--accento-forte);
+}
+
+.pp-azione:focus-visible {
+  border-radius: var(--raggio);
+}
+
+.pp-azione--tenue {
+  color: var(--testo-2);
+}
+
+.pp-azione--tenue:hover,
+.pp-azione--tenue:focus-visible {
+  color: var(--testo);
+}
+
+.pp-azione:disabled,
+.pp-azione[aria-disabled="true"] {
+  color: var(--testo-3);
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+/* Area cliccabile estesa a tutta la riga che la contiene */
+.pp-azione--estesa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--raggio);
+}
+
+.pp-azione--estesa:focus-visible {
+  outline: none;
+}
+
+.pp-azione--estesa:focus-visible::after {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+@media (pointer: coarse) {
+  .pp-azione {
+    min-height: 40px;
+  }
+}
+
+/* Bottone a icona: icona nuda 20 px, area invisibile 40×40 */
+.pp-icona-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  color: var(--testo-2);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--durata-breve) ease, color var(--durata-breve) ease;
+}
+
+.pp-icona-btn svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.pp-icona-btn:hover {
+  color: var(--testo);
+  background: var(--superficie-2);
+}
+
+.pp-icona-btn:active {
+  background: color-mix(in srgb, var(--superficie-2) 70%, var(--testo) 8%);
+}
+
+.pp-icona-btn[aria-pressed="true"],
+.pp-icona-btn[aria-expanded="true"] {
+  color: var(--testo);
+  background: var(--superficie-2);
+}
+
+.pp-icona-btn:disabled,
+.pp-icona-btn[aria-disabled="true"] {
+  opacity: .4;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.pp-icona-btn--piccolo {
+  width: 32px;
+  height: 32px;
+}
+
+.pp-icona-btn--piccolo svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (pointer: coarse) {
+  .pp-icona-btn--piccolo {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Link nel testo */
+.pp-link {
+  color: var(--accento);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .22em;
+  text-decoration-color: currentColor;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  transition: color var(--durata-breve) ease, text-decoration-color var(--durata-breve) ease;
+}
+
+.pp-link:hover {
+  color: var(--testo);
+  text-decoration-color: currentColor;
+}
+
+.pp-link--tenue {
+  color: var(--testo-2);
+}
+
+.pp-link--nudo {
+  text-decoration-color: transparent;
+}
+
+.pp-link--nudo:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Tasto di scorciatoia: velo leggero, nessuna cornice */
+.pp-tasto {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: .02em;
+  color: var(--testo-3);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Moduli — campi a filetto, come su carta da lettera
+   -------------------------------------------------------------------------- */
+.pp-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pp-campo__testa {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pp-campo__testa a,
+.pp-campo__testa .pp-azione {
+  padding: 0;
+  font-size: .8125rem;
+  font-weight: 400;
+  color: var(--testo-3);
+}
+
+.pp-campo__testa a:hover,
+.pp-campo__testa .pp-azione:hover {
+  color: var(--accento);
+}
+
+.pp-campo__etichetta {
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .005em;
+  color: var(--testo-2);
+  transition: color var(--durata-breve) ease;
+}
+
+/* Al fuoco l'etichetta si accende di cobalto */
+.pp-campo:focus-within .pp-campo__etichetta {
+  color: var(--accento);
+}
+
+/* Il campo: solo il filetto di fondo */
+.pp-campo__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: var(--h-campo);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-testo);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--testo);
+  background: var(--campo-fondo);
+  border: 0;
+  border-bottom: 1px solid var(--campo-bordo);
+  border-radius: 0;
+  box-shadow: inset 0 -1px 0 transparent;
+  outline: none;
+  caret-color: var(--accento);
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color var(--durata-breve) ease,
+    box-shadow var(--durata-breve) ease,
+    color var(--durata-breve) ease;
+}
+
+.pp-campo__input::placeholder {
+  color: var(--testo-3);
+  opacity: 1; /* contrasto 5:1 anche sul fondo bianco */
+}
+
+@media (hover: hover) {
+  .pp-campo__input:hover {
+    border-bottom-color: var(--campo-bordo-hover);
+  }
+}
+
+/* Fuoco: il filetto diventa 2 px cobalto (1 px bordo + 1 px ombra interna, nessuno scatto) */
+.pp-campo__input:focus,
+.pp-campo__input:focus-visible {
+  border-bottom-color: var(--accento);
+  box-shadow: inset 0 -1px 0 var(--accento);
+  outline: none;
+}
+
+.pp-campo__input:disabled {
+  color: var(--testo-3);
+  border-bottom-style: dotted;
+  cursor: not-allowed;
+}
+
+.pp-campo__input[readonly] {
+  border-bottom-style: dotted;
+}
+
+/* Niente fondo giallo/azzurro del riempimento automatico: il fondo resta trasparente */
+.pp-campo__input:-webkit-autofill,
+.pp-campo__input:-webkit-autofill:hover,
+.pp-campo__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--testo);
+  caret-color: var(--accento);
+  transition: background-color 600000s 0s, color 600000s 0s, border-color var(--durata-breve) ease, box-shadow var(--durata-breve) ease;
+}
+
+/* Testo lungo: righe su un solo filetto di fondo, cresce con il contenuto */
+textarea.pp-campo__input {
+  height: auto;
+  min-height: 84px;
+  padding: 12px 0 10px;
+  line-height: 1.55;
+  resize: none;
+  field-sizing: content;
+}
+
+/* Dove il campo non cresce da solo, si lascia allungare a mano */
+@supports not (field-sizing: content) {
+  textarea.pp-campo__input {
+    resize: vertical;
+  }
+}
+
+.pp-campo--compatto .pp-campo__input {
+  height: 40px;
+  font-size: .9375rem;
+}
+
+/* Input con comando a destra (mostra password): icona nuda in fondo al filetto */
+.pp-campo__gruppo {
+  position: relative;
+}
+
+.pp-campo__gruppo .pp-campo__input {
+  padding-right: 36px;
+}
+
+.pp-campo__azione {
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--testo-3);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: color var(--durata-breve) ease, background-color var(--durata-breve) ease;
+}
+
+.pp-campo__azione:hover {
+  color: var(--testo);
+  background: var(--riga-hover);
+}
+
+.pp-campo__azione[aria-pressed="true"] {
+  color: var(--testo);
+}
+
+.pp-campo__azione svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Select con freccia disegnata */
+.pp-campo__scelta {
+  position: relative;
+}
+
+.pp-campo__scelta .pp-campo__input {
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+.pp-campo__scelta::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--testo-2);
+  border-bottom: 1.5px solid var(--testo-2);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.pp-campo__scelta select option {
+  color: var(--testo);
+  background: var(--superficie);
+}
+
+.pp-campo__aiuto {
+  margin-top: 6px;
+  font-size: .8125rem;
+  line-height: 1.45;
+  color: var(--testo-3);
+}
+
+.pp-campo__errore {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: 8px;
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--errore);
+}
+
+.pp-campo__errore::before {
+  content: "✕";
+  content: "✕" / "";
+  flex: none;
+  font-family: var(--font-simboli);
+  font-size: .8em;
+}
+
+.pp-campo__aiuto + .pp-campo__errore {
+  margin-top: 2px;
+}
+
+/* Errore: filetto rosso, etichetta rossa */
+.pp-campo--errore .pp-campo__input,
+.pp-campo__input[aria-invalid="true"] {
+  border-bottom-color: var(--errore);
+}
+
+.pp-campo--errore .pp-campo__input:focus,
+.pp-campo__input[aria-invalid="true"]:focus {
+  border-bottom-color: var(--errore);
+  box-shadow: inset 0 -1px 0 var(--errore);
+}
+
+.pp-campo--errore .pp-campo__etichetta,
+.pp-campo--errore:focus-within .pp-campo__etichetta,
+.pp-campo:has(.pp-campo__input[aria-invalid="true"]) .pp-campo__etichetta {
+  color: var(--errore);
+}
+
+/* Casella (18 px, bordo 1,5 px) e scelta singola (tonda) */
+.pp-spunta {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: .875rem;
+  line-height: 1.45;
+  color: var(--testo-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pp-spunta input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: none;
+  display: grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  background: transparent;
+  border: 1.5px solid var(--testo-2);
+  border-radius: var(--raggio-3);
+  cursor: pointer;
+  transition: background-color var(--durata-breve) ease, border-color var(--durata-breve) ease;
+}
+
+/* Il segno di spunta: SVG in maschera, colorato con --su-testo */
+.pp-spunta input::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--su-testo);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.4 6.3 4.9 8.7 9.7 3.5' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.4 6.3 4.9 8.7 9.7 3.5' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
+  transform: scale(.4);
+  opacity: 0;
+  transition: transform var(--durata-breve) var(--curva), opacity var(--durata-breve) ease;
+}
+
+.pp-spunta input:checked {
+  background: var(--testo);
+  border-color: var(--testo);
+}
+
+.pp-spunta input:checked::before {
+  transform: none;
+  opacity: 1;
+}
+
+/* Scelta singola: anello che si fa inchiostro, punto pieno al centro */
+.pp-spunta input[type="radio"] {
+  border-radius: 50%;
+}
+
+.pp-spunta input[type="radio"]::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--testo);
+  -webkit-mask: none;
+  mask: none;
+}
+
+.pp-spunta input[type="radio"]:checked {
+  background: transparent;
+  border-color: var(--testo);
+}
+
+.pp-spunta:hover input:not(:checked, :disabled) {
+  border-color: var(--testo);
+}
+
+.pp-spunta input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pp-spunta:has(input:checked) {
+  color: var(--testo);
+}
+
+.pp-spunta input:disabled,
+.pp-spunta:has(input:disabled) {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Interruttore (impostazioni, tema scuro): binario 36×20, pomello 16 — l'unica pillola ammessa */
+.pp-interruttore {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  font-size: .875rem;
+  line-height: 1.4;
+  color: var(--testo);
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pp-interruttore__binario {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  background: var(--interruttore-spento);
+  border: 0;
+  border-radius: 10px;
+  transition: background-color var(--durata-breve) ease;
+}
+
+/* spento: un filetto attorno al binario, così si vede anche su fondo chiaro */
+.pp-interruttore:not([aria-checked="true"]) .pp-interruttore__binario {
+  box-shadow: inset 0 0 0 1.5px var(--testo-3);
+}
+
+.pp-interruttore__binario::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--interruttore-pomello);
+  transition: transform var(--durata-breve) var(--curva), background-color var(--durata-breve) ease;
+}
+
+.pp-interruttore:hover .pp-interruttore__binario {
+  background: color-mix(in srgb, var(--interruttore-spento) 80%, var(--testo) 20%);
+}
+
+.pp-interruttore[aria-checked="true"] .pp-interruttore__binario {
+  background: var(--testo);
+}
+
+.pp-interruttore[aria-checked="true"] .pp-interruttore__binario::after {
+  background: var(--su-testo);
+  transform: translateX(16px);
+}
+
+.pp-interruttore:focus-visible {
+  outline: none;
+}
+
+.pp-interruttore:focus-visible .pp-interruttore__binario {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pp-interruttore:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Etichetta a sinistra, interruttore in fondo a destra (righe delle impostazioni) */
+.pp-interruttore--esteso {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pp-interruttore--esteso .pp-interruttore__binario {
+  order: 2;
+}
+
+/* Codice a 6 cifre: sei cifre su un filetto ciascuna, un puntino a metà */
+.pp-codice {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.pp-codice > legend {
+  margin-bottom: 12px;
+}
+
+.pp-codice__caselle {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.pp-codice__cifra {
+  flex: 0 1 46px;
+  width: 46px;
+  min-width: 0;
+  height: 60px;
+  margin: 0;
+  padding: 0 0 4px;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 2.125rem;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--testo);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--campo-vuoto);
+  border-radius: 0;
+  outline: none;
+  caret-color: var(--accento);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color var(--durata-breve) ease, color var(--durata-breve) ease;
+}
+
+.pp-codice__cifra::placeholder {
+  color: transparent;
+}
+
+/* Cifra scritta: filetto inchiostro (serve placeholder=" " sull'input, oppure la classe .piena) */
+.pp-codice__cifra:not(:placeholder-shown),
+.pp-codice__cifra.piena {
+  border-bottom-color: var(--testo);
+}
+
+/* Cifra attiva: filetto cobalto */
+.pp-codice__cifra:focus,
+.pp-codice__cifra:focus-visible,
+.pp-codice__cifra.attiva {
+  border-bottom-color: var(--accento);
+  outline: none;
+}
+
+/* Il puntino tra la terza e la quarta cifra: appoggiato sulla linea di base delle cifre
+   (la base sta 25 px sopra il filetto), come un punto tipografico; niente più speck a mezz'aria */
+.pp-codice__trattino {
+  flex: none;
+  align-self: flex-end;
+  width: 4px;
+  height: 4px;
+  margin: 0 2px 24px;
+  border-radius: 50%;
+  background: var(--testo-3);
+}
+
+.pp-codice--errore .pp-codice__cifra,
+.pp-codice__cifra[aria-invalid="true"] {
+  border-bottom-color: var(--errore);
+}
+
+.pp-codice--errore .pp-codice__cifra {
+  color: var(--errore);
+}
+
+@media (max-width: 600px) {
+  .pp-codice__caselle {
+    gap: 10px;
+  }
+
+  .pp-codice__cifra {
+    flex-basis: 40px;
+    height: 56px;
+    font-size: 1.875rem;
+  }
+
+  .pp-codice__trattino {
+    margin: 0 0 22px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   12. Stati: simbolo + parola + colore (mai su fondo pieno)
+   -------------------------------------------------------------------------- */
+.pp-stato {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .45em;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--testo-2);
+}
+
+/* Il simbolo è decorativo: la parola porta il significato */
+.pp-stato::before {
+  flex: none;
+  display: inline-block;
+  min-width: 1em;
+  font-family: var(--font-simboli);
+  font-weight: 400;
+  font-size: .9em;
+  line-height: 1;
+  text-align: center;
+}
+
+.pp-stato--ok { color: var(--ok); }
+.pp-stato--attenzione { color: var(--attenzione); }
+.pp-stato--errore { color: var(--errore); }
+.pp-stato--corso { color: var(--accento); }
+.pp-stato--coda { color: var(--testo-3); }
+.pp-stato--nota { color: var(--testo-2); }
+
+.pp-stato--ok::before { content: "✓"; content: "✓" / ""; }
+.pp-stato--attenzione::before { content: "▲"; content: "▲" / ""; font-size: .7em; }
+.pp-stato--errore::before { content: "✕"; content: "✕" / ""; font-size: .82em; }
+.pp-stato--corso::before { content: "◐"; content: "◐" / ""; }
+.pp-stato--coda::before { content: "○"; content: "○" / ""; }
+.pp-stato--nota::before { content: "•"; content: "•" / ""; }
+
+/* Se il simbolo è già nell'HTML, niente doppione */
+.pp-stato:has(> .pp-stato__simbolo)::before {
+  content: none;
+}
+
+.pp-stato__simbolo {
+  font-family: var(--font-simboli);
+  font-weight: 400;
+}
+
+.pp-stato--piccolo {
+  font-size: .75rem;
+}
+
+/* Vecchio nome della variante con fondo: ora solo testo, nessuna pillola */
+.pp-stato--pastiglia {
+  font-size: .8125rem;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+/* Pallino di stato («Sistema attivo») */
+.pp-punto {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
+}
+
+.pp-punto--ok { color: var(--ok); }
+.pp-punto--attenzione { color: var(--attenzione); }
+.pp-punto--errore { color: var(--errore); }
+.pp-punto--accento { color: var(--accento); }
+
+/* Pallino vivo: un'onda leggera ogni 2,4 s (solo sito) */
+.pp-punto--vivo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: pp-pulsa 2.4s ease-out infinite;
+}
+
+@keyframes pp-pulsa {
+  0% { transform: scale(1); opacity: .7; }
+  70%, 100% { transform: scale(2.8); opacity: 0; }
+}
+
+
+/* --------------------------------------------------------------------------
+   13. Distintivi
+   -------------------------------------------------------------------------- */
+.pp-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-family: var(--font-testo);
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+  color: var(--testo-2);
+  background: var(--superficie-2);
+  border: 0;
+  border-radius: var(--raggio);
+}
+
+/* Conteggio: cerchio d'inchiostro (porcellana sul blu). Mai ambra. */
+.pp-badge--inchiostro,
+.pp-badge--attenzione {
+  min-width: 20px;
+  padding: 0 5px;
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--su-testo);
+  background: var(--testo);
+  border-radius: 10px;
+}
+
+/* «esempio»: solo testo cobalto, senza fondo (SPECIFICHE §2b) */
+.pp-badge--accento {
+  color: var(--accento);
+  background: transparent;
+}
+
+.pp-badge--pieno {
+  color: var(--accento-testo);
+  background: var(--accento);
+  border-radius: 10px;
+}
+
+.pp-badge--ok {
+  color: var(--ok);
+  background: var(--ok-fondo);
+}
+
+.pp-badge--errore {
+  color: var(--errore);
+  background: var(--errore-fondo);
+}
+
+/* Versione «v05»: solo cifre mono, nessuna cornice né fondo */
+.pp-badge--contorno {
+  min-width: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: .8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--testo-2);
+  background: transparent;
+}
+
+
+/* --------------------------------------------------------------------------
+   14. Avvisi in riga: senza scatola, filetto a sinistra e simbolo
+   -------------------------------------------------------------------------- */
+.pp-avviso {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 2px 0 2px 16px;
+  font-size: .875rem;
+  line-height: 1.55;
+  color: var(--testo);
+  background: none;
+  border: 0;
+  border-left: 2px solid var(--testo-3);
+}
+
+.pp-avviso::before {
+  flex: none;
+  font-family: var(--font-simboli);
+  font-size: .85em;
+  line-height: 1;
+}
+
+.pp-avviso--ok { border-left-color: var(--ok); }
+.pp-avviso--ok::before { content: "✓"; content: "✓" / ""; color: var(--ok); }
+
+.pp-avviso--attenzione { border-left-color: var(--attenzione); }
+.pp-avviso--attenzione::before { content: "▲"; content: "▲" / ""; color: var(--attenzione); font-size: .72em; }
+
+.pp-avviso--errore { border-left-color: var(--errore); }
+.pp-avviso--errore::before { content: "✕"; content: "✕" / ""; color: var(--errore); }
+
+.pp-avviso--info { border-left-color: var(--accento); }
+
+
+/* --------------------------------------------------------------------------
+   15. Pannelli e titoli di sezione
+   Si raggruppa con lo spazio: superficie bianca SENZA bordo, un titolo
+   Newsreader 22 con un filetto sotto. Mai scatola dentro la scatola.
+   -------------------------------------------------------------------------- */
+.pp-pannello {
+  min-width: 0;
+  padding: 26px 32px 30px;
+  background: var(--superficie);
+  border: 0;
+  border-radius: 0;
+}
+
+/* Un pannello dentro un pannello si appiattisce */
+.pp-pannello .pp-pannello {
+  padding: 0;
+  background: transparent;
+}
+
+/* Titolo di gruppo e testa del pannello: stessa grammatica */
+.pp-pannello__testa,
+.pp-sezione-titolo,
+.pp-dafare__testa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 20px;
+  margin: 0 0 16px;
+  padding: 0 0 13px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.pp-pannello__titolo,
+.pp-sezione-titolo > :is(h1, h2, h3, h4) {
+  margin: 0;
+}
+
+.pp-pannello__titolo,
+.pp-sezione-titolo,
+.pp-sezione-titolo > :is(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -.005em;
+  color: var(--testo);
+}
+
+/* Dentro il titolo, le note e le azioni tornano al carattere del testo */
+.pp-sezione-titolo > :not(h1, h2, h3, h4) {
+  font-family: var(--font-testo);
+}
+
+.pp-pannello__nota,
+.pp-sezione-titolo__nota {
+  font-family: var(--font-testo);
+  font-size: .8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--testo-2);
+}
+
+.pp-sezione-titolo .pp-azione,
+.pp-pannello__testa .pp-azione {
+  padding: 0;
+}
+
+/* Le righe che seguono il titolo partono dal suo filetto (niente doppio filetto) */
+:is(.pp-pannello__testa, .pp-sezione-titolo, .pp-dafare__testa) + :is(.pp-lista, .pp-dafare__lista, .pp-valori, .pp-tabella, .pp-tabella-scorri, .pp-riga-cliccabile) {
+  margin-top: -16px;
+}
+
+:is(.pp-pannello__testa, .pp-sezione-titolo) + .pp-valori > div:first-child {
+  border-top: 0;
+}
+
+.pp-pannello__piede {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+
+/* Vecchio nome del pannello «Da fare»: ora neutro come gli altri (niente ambra) */
+.pp-pannello--attenzione {
+  background: var(--superficie);
+}
+
+.pp-pannello--incassato {
+  background: var(--pagina);
+}
+
+.pp-pannello--vuoto {
+  padding: 0;
+}
+
+.pp-pannello--vuoto > .pp-pannello__testa {
+  margin: 0;
+  padding: 22px 32px 13px;
+}
+
+@media (max-width: 600px) {
+  .pp-pannello {
+    padding: 20px 18px 22px;
+  }
+
+  .pp-pannello--vuoto {
+    padding: 0;
+  }
+
+  .pp-pannello--vuoto > .pp-pannello__testa {
+    padding: 18px 18px 12px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   16. Righe cliccabili — niente schede: filetti, velo al passaggio
+   -------------------------------------------------------------------------- */
+.pp-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pp-riga-cliccabile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px 24px;
+  width: calc(100% + 2 * var(--rientro-riga));
+  min-height: 56px;
+  margin: 0 calc(-1 * var(--rientro-riga));
+  padding: 14px var(--rientro-riga);
+  font: inherit;
+  font-size: .9375rem;
+  line-height: 1.4;
+  color: var(--testo);
+  text-align: left;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--raggio);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--durata-breve) ease;
+}
+
+/* Il filetto sotto la riga resta allineato alla colonna del testo */
+.pp-riga-cliccabile::after {
+  content: "";
+  position: absolute;
+  left: var(--rientro-riga);
+  right: var(--rientro-riga);
+  bottom: 0;
+  height: 1px;
+  background: var(--linea);
+  pointer-events: none;
+}
+
+a.pp-riga-cliccabile:hover,
+a.pp-riga-cliccabile:visited {
+  color: var(--testo);
+}
+
+.pp-riga-cliccabile:hover,
+.pp-riga-cliccabile:has(.pp-azione--estesa:hover) {
+  background: var(--riga-hover);
+}
+
+.pp-riga-cliccabile:focus-visible {
+  outline-offset: 0;
+}
+
+/* Riga scelta: solo il filo cobalto a sinistra e il titolo in cobalto (il fondo resta al passaggio) */
+.pp-riga-cliccabile[aria-current="page"],
+.pp-riga-cliccabile.selezionata {
+  box-shadow: inset 2px 0 0 var(--accento);
+}
+
+.pp-riga-cliccabile[aria-current="page"] .pp-riga-cliccabile__titolo,
+.pp-riga-cliccabile.selezionata .pp-riga-cliccabile__titolo {
+  color: var(--accento);
+}
+
+.pp-riga-cliccabile__testo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pp-riga-cliccabile__titolo {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--testo);
+  overflow-wrap: anywhere;
+}
+
+.pp-riga-cliccabile__nota {
+  font-size: .875rem;
+  line-height: 1.4;
+  color: var(--testo-2);
+}
+
+.pp-riga-cliccabile__valore {
+  flex: none;
+  min-width: 3em;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--testo);
+}
+
+/* L'azione della riga: compare in cobalto al passaggio o al fuoco */
+.pp-riga-cliccabile__azione {
+  flex: none;
+  min-width: 3.5em;
+  font-size: .875rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--accento);
+  transition: opacity var(--durata-breve) ease, transform var(--durata-breve) var(--curva);
+}
+
+@media (hover: hover) {
+  .pp-riga-cliccabile__azione {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+
+  .pp-riga-cliccabile:hover .pp-riga-cliccabile__azione,
+  .pp-riga-cliccabile:focus-visible .pp-riga-cliccabile__azione,
+  .pp-riga-cliccabile:focus-within .pp-riga-cliccabile__azione {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .pp-riga-cliccabile {
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   17. «Da fare» — neutro: conta la posizione e la tipografia, non il colore
+   -------------------------------------------------------------------------- */
+.pp-dafare {
+  min-width: 0;
+}
+
+.pp-dafare__titolo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: 1.625rem;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  color: var(--testo);
+}
+
+/* Conteggio nel cerchio d'inchiostro (porcellana sul blu) */
+.pp-dafare__conta {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  font-family: var(--font-testo);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--su-testo);
+  background: var(--testo);
+  border-radius: 12px;
+  transform: translateY(-1px);
+}
+
+.pp-dafare__nota {
+  font-size: .8125rem;
+  line-height: 1.4;
+  color: var(--testo-2);
+}
+
+.pp-dafare__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: pp-dafare;
+}
+
+.pp-dafare__voce {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 3px;
+  align-items: baseline;
+  margin: 0 calc(-1 * var(--rientro-riga));
+  padding: 18px var(--rientro-riga) 17px;
+  border-radius: var(--raggio);
+  counter-increment: pp-dafare;
+  transition: background-color var(--durata-breve) ease;
+}
+
+/* Numero 01 02 03 in Newsreader, tono --testo-3 */
+.pp-dafare__voce::before,
+.pp-dafare__numero {
+  grid-column: 1;
+  grid-row: 1;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-size: 1.375rem;
+  line-height: 1;
+  letter-spacing: .01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--testo-3);
+}
+
+.pp-dafare__voce::before {
+  content: counter(pp-dafare, decimal-leading-zero);
+}
+
+.pp-dafare__voce:has(> .pp-dafare__numero)::before {
+  content: none;
+  display: none;
+}
+
+/* Filetto sotto ogni voce, allineato alla colonna */
+.pp-dafare__voce::after {
+  content: "";
+  position: absolute;
+  left: var(--rientro-riga);
+  right: var(--rientro-riga);
+  bottom: 0;
+  height: 1px;
+  background: var(--linea);
+  pointer-events: none;
+}
+
+.pp-dafare__voce > :is(.pp-dafare__corpo, .pp-dafare__testo, .pp-dafare__contesto) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.pp-dafare__voce > .pp-azione,
+.pp-dafare__azione {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  padding: 0;
+}
+
+.pp-dafare__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pp-dafare__testo {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--testo);
+}
+
+.pp-dafare__contesto {
+  font-size: .875rem;
+  line-height: 1.45;
+  color: var(--testo-2);
+}
+
+/* Voce intera cliccabile (con .pp-azione--estesa): velo al passaggio */
+.pp-dafare__voce:has(.pp-azione--estesa:hover) {
+  background: var(--riga-hover);
+}
+
+@media (max-width: 600px) {
+  .pp-dafare__titolo {
+    font-size: 1.5rem;
+  }
+
+  .pp-dafare__voce {
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .pp-dafare__voce > .pp-azione,
+  .pp-dafare__azione {
+    grid-column: 2;
+    grid-row: auto;
+    justify-self: start;
+    margin-top: 4px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   18. Coppie etichetta / valore
+   -------------------------------------------------------------------------- */
+.pp-valori {
+  margin: 0;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pp-valori > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--linea-2);
+}
+
+.pp-valori > div:first-child {
+  border-top-color: var(--linea);
+}
+
+.pp-valori dt {
+  min-width: 0;
+  color: var(--testo-2);
+}
+
+.pp-valori dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--testo);
+}
+
+.pp-valori--chiuso > div:last-child {
+  border-bottom: 1px solid var(--linea);
+}
+
+
+/* --------------------------------------------------------------------------
+   19. Tabelle (senza cornice: filetti tra le righe)
+   -------------------------------------------------------------------------- */
+.pp-tabella {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+  line-height: 1.4;
+  color: var(--testo);
+  background: var(--superficie);
+  border: 0;
+}
+
+.pp-tabella caption {
+  caption-side: top;
+  padding: 0 0 8px;
+  text-align: left;
+  font-size: .8125rem;
+  color: var(--testo-3);
+}
+
+.pp-tabella th {
+  padding: 10px 12px;
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: left;
+  vertical-align: bottom;
+  white-space: nowrap;
+  color: var(--testo-2);
+  border-bottom: 1px solid var(--linea);
+}
+
+.pp-tabella td {
+  padding: 13px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--linea-2);
+}
+
+/* Intestazione di riga (th nel corpo): stesso filetto e stesso corpo delle celle, così la riga è un filo continuo */
+.pp-tabella tbody th {
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: middle;
+  color: var(--testo);
+  border-bottom-color: var(--linea-2);
+}
+
+.pp-tabella tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.pp-tabella tr > :first-child {
+  padding-left: 20px;
+}
+
+.pp-tabella tr > :last-child {
+  padding-right: 20px;
+}
+
+/* Colonne numeriche: a destra, cifre tabellari */
+.pp-tabella .num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pp-tabella__forte {
+  font-weight: 500;
+}
+
+.pp-tabella__sotto {
+  display: block;
+  margin-top: 2px;
+  font-size: .75rem;
+  line-height: 1.35;
+  color: var(--testo-3);
+}
+
+.pp-tabella--nuda {
+  background: transparent;
+  border: 0;
+}
+
+.pp-tabella--nuda tr > :first-child {
+  padding-left: 0;
+}
+
+.pp-tabella--nuda tr > :last-child {
+  padding-right: 0;
+}
+
+.pp-tabella--nuda tbody tr:last-child > * {
+  border-bottom: 1px solid var(--linea-2);
+}
+
+.pp-tabella--compatta td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.pp-tabella--compatta th {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.pp-tabella--attiva tbody tr {
+  cursor: pointer;
+  transition: background-color var(--durata-breve) ease;
+}
+
+.pp-tabella--attiva tbody tr:hover {
+  background: var(--riga-hover);
+}
+
+.pp-tabella tr.selezionata,
+.pp-tabella tr[aria-selected="true"] {
+  background: var(--riga-hover);
+}
+
+.pp-tabella tr.selezionata > :first-child,
+.pp-tabella tr[aria-selected="true"] > :first-child {
+  box-shadow: inset 2px 0 0 var(--accento);
+}
+
+/* Sul telefono la tabella scorre dentro il suo riquadro */
+.pp-tabella-scorri {
+  position: relative; /* le didascalie per i lettori di schermo non allargano la pagina */
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--linea-forte) transparent;
+}
+
+@media (max-width: 899px) {
+  .pp-tabella-scorri > .pp-tabella {
+    min-width: 640px;
+  }
+
+  .pp-tabella {
+    font-size: .8125rem;
+  }
+
+  .pp-tabella:not(.pp-tabella--nuda) tr > :first-child {
+    padding-left: 16px;
+  }
+
+  .pp-tabella:not(.pp-tabella--nuda) tr > :last-child {
+    padding-right: 16px;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   20. Barre e tappe d'avanzamento
+   -------------------------------------------------------------------------- */
+.pp-barra {
+  position: relative;
+  height: 3px;
+  overflow: hidden;
+  background: var(--linea-forte); /* il vuoto si vede anche sul fondo della superficie */
+}
+
+.pp-barra__pieno {
+  display: block;
+  width: var(--valore, 0%);
+  height: 100%;
+  background: var(--testo);
+  transition: width var(--durata-rivela) var(--curva);
+}
+
+.pp-barra--sottile { height: 2px; }
+.pp-barra--accento .pp-barra__pieno { background: var(--accento); }
+.pp-barra--attenzione .pp-barra__pieno { background: var(--attenzione); }
+.pp-barra--ok .pp-barra__pieno { background: var(--ok); }
+
+.pp-passi {
+  display: grid;
+  grid-template-columns: repeat(var(--passi, 4), minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pp-passo {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  line-height: 1.3;
+  color: var(--testo-3);
+}
+
+/* Il segmento sopra ogni tappa */
+.pp-passo::before {
+  content: "";
+  display: block;
+  height: 3px;
+  margin-bottom: 7px;
+  background: var(--linea-forte);
+}
+
+.pp-passo--fatto::before {
+  background: var(--testo);
+}
+
+.pp-passo--corrente {
+  color: var(--accento);
+}
+
+.pp-passo--corrente::before {
+  background:
+    linear-gradient(var(--accento), var(--accento)) left / var(--avanzamento, 50%) 100% no-repeat,
+    var(--ghiaccio);
+}
+
+.pp-passo--mano {
+  color: var(--attenzione);
+}
+
+.pp-passo--mano::before {
+  background:
+    linear-gradient(var(--attenzione), var(--attenzione)) left / var(--avanzamento, 50%) 100% no-repeat,
+    var(--superficie-2);
+}
+
+.pp-passo__nome {
+  font-family: var(--font-testo);
+  font-size: .75rem;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+
+/* --------------------------------------------------------------------------
+   21. Schede
+   -------------------------------------------------------------------------- */
+.pp-schede {
+  display: flex;
+  gap: 28px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--linea);
+  scrollbar-width: none;
+}
+
+.pp-schede::-webkit-scrollbar {
+  display: none;
+}
+
+.pp-schede__voce {
+  flex: none;
+  margin-bottom: -1px;
+  padding: 12px 0 11px;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--testo-2);
+  white-space: nowrap;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--durata-breve) ease, border-color var(--durata-breve) ease;
+}
+
+.pp-schede__voce:hover {
+  color: var(--testo);
+}
+
+.pp-schede__voce[aria-selected="true"],
+.pp-schede__voce[aria-current="page"] {
+  color: var(--testo);
+  border-bottom-color: var(--testo);
+}
+
+.pp-schede__voce:focus-visible {
+  outline-offset: -2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   22. Menu galleggiante (l'unica ombra del sistema)
+   -------------------------------------------------------------------------- */
+.pp-menu {
+  position: absolute;
+  z-index: var(--z-menu);
+  min-width: 220px;
+  padding: 6px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--raggio-3);
+  box-shadow: var(--ombra-menu);
+}
+
+.pp-menu__titolo {
+  padding: 8px 10px 6px;
+  font-size: .75rem;
+  line-height: 1.3;
+  color: var(--testo-3);
+}
+
+.pp-menu__voce {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  font-size: .875rem;
+  line-height: 1.3;
+  text-align: left;
+  text-decoration: none;
+  color: var(--testo);
+  background: none;
+  border: 0;
+  border-radius: var(--raggio);
+  cursor: pointer;
+  transition: background-color var(--durata-breve) ease;
+}
+
+.pp-menu__voce:hover,
+.pp-menu__voce:focus-visible {
+  color: var(--testo);
+  background: var(--riga-hover);
+}
+
+.pp-menu__voce:focus-visible {
+  outline-offset: -2px;
+}
+
+.pp-menu__voce svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--testo-2);
+}
+
+.pp-menu__voce[aria-checked="true"]::after {
+  content: "✓";
+  content: "✓" / "";
+  margin-left: auto;
+  font-family: var(--font-simboli);
+  color: var(--testo);
+}
+
+.pp-menu__separatore {
+  height: 1px;
+  margin: 6px -6px;
+  background: var(--linea);
+  border: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   23. Rivelazione allo scorrimento
+   Lo script osserva gli elementi .pp-rivela e aggiunge .visibile (una volta).
+   Si nasconde solo se c'è lo script: con .pp-js su <html>, oppure appena il
+   primo elemento è stato rivelato. Se lo script manca, tutto resta visibile.
+   -------------------------------------------------------------------------- */
+.pp-rivela {
+  transition:
+    opacity var(--durata-rivela) var(--curva),
+    transform var(--durata-rivela) var(--curva);
+  transition-delay: var(--ritardo, 0ms);
+}
+
+:root.pp-js .pp-rivela:not(.visibile),
+:root:has(.pp-rivela.visibile) .pp-rivela:not(.visibile) {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+.pp-rivela.visibile {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   24. Movimento ridotto: niente animazioni né rivelazioni
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .pp-rivela,
+  :root.pp-js .pp-rivela:not(.visibile),
+  :root:has(.pp-rivela.visibile) .pp-rivela:not(.visibile) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .pp-punto--vivo::after,
+  .pp-btn[aria-busy="true"]::after {
+    animation: none !important;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   25. Colori forzati (Contrasto elevato di Windows)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .pp-btn--primario,
+  .pp-btn--tenue,
+  .pp-badge,
+  .pp-dafare__conta {
+    border: 1px solid ButtonText;
+  }
+
+  .pp-btn--secondario::after,
+  .pp-btn--testo::after,
+  .pp-riga-cliccabile::after,
+  .pp-dafare__voce::after {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .pp-campo__input,
+  .pp-codice__cifra {
+    border-bottom-color: CanvasText;
+  }
+
+  .pp-spunta input:checked,
+  .pp-interruttore[aria-checked="true"] .pp-interruttore__binario {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .pp-interruttore__binario {
+    border: 1px solid ButtonText;
+  }
+
+  .pp-barra__pieno,
+  .pp-passo--fatto::before,
+  .pp-punto {
+    background: Highlight;
+  }
+
+  .pp-angoli::before {
+    display: none;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   26. Stampa: sempre chiaro, niente comandi
+   -------------------------------------------------------------------------- */
+@media print {
+  [data-tema="notte"],
+  .fascia-notte,
+  .app-html .fascia-notte,
+  .fascia-antracite {
+    color-scheme: light;
+    --pagina: #FFFFFF;
+    --superficie: #FFFFFF;
+    --superficie-2: #EEF0F3;
+    --testo: #0B1026;
+    --testo-2: #4A5064;
+    --testo-3: #62687C;
+    --su-testo: #FFFFFF;
+    --linea: #DADDE4;
+    --linea-2: #E8EBF0;
+    --linea-forte: #AEB3C0;
+    --accento: #1F35C9;
+    --ok: #1E7A4F;
+    --attenzione: #8A5A00;
+    --attenzione-fondo: #F6EEDC;
+    --errore: #B4233C;
+  }
+
+  @page {
+    margin: 16mm 14mm;
+  }
+
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #0B1026;
+  }
+
+  .pp-non-stampare,
+  .pp-btn,
+  .pp-icona-btn,
+  .pp-menu,
+  .pp-salta,
+  .pp-schede {
+    display: none !important;
+  }
+
+  .pp-rivela {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .pp-pannello,
+  .pp-avviso,
+  .pp-valori > div,
+  .pp-dafare__voce,
+  .pp-riga-cliccabile,
+  .pp-tabella tr {
+    break-inside: avoid;
+  }
+
+  .pp-tabella thead {
+    display: table-header-group;
+  }
+
+  .pp-tabella-scorri {
+    overflow: visible;
+  }
+
+  .pp-tabella-scorri > .pp-tabella {
+    min-width: 0;
+  }
+
+  .pp-riga-cliccabile__azione {
+    display: none;
+  }
+
+  .pp-stato,
+  .pp-badge,
+  .pp-dafare__conta,
+  .pp-barra,
+  .pp-passo::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
