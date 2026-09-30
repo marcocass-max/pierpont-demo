@@ -22,7 +22,7 @@
 
    TOKEN (custom properties, ridefiniti per tema)
      colori   --pagina --superficie --superficie-2 --testo --testo-2 --testo-3
-              --su-testo (testo su fondo inchiostro: bianco sul chiaro, blu notte sullo scuro)
+              --su-testo (testo su fondo inchiostro: bianco sul chiaro, blu notte o antracite sullo scuro)
               --linea (filetto) --linea-2 (filetto leggero tra righe) --linea-forte (filetto dei campi e del codice, marchio)
               --accento --accento-forte (premuto) --accento-testo --ghiaccio --su-ghiaccio
               --ok --ok-fondo --attenzione --attenzione-fondo --attenzione-linea --su-attenzione
@@ -332,66 +332,95 @@
 }
 
 /* --------------------------------------------------------------------------
-   2b. Token — Antracite (tema scuro della piattaforma, scelta di Marco del 30/9)
-   Grigio carbone con un filo di freddo, mai nero puro; il cobalto chiaro fa
-   da lancette. Dentro l'app anche le fasce scure (.fascia-notte, per esempio
-   la costellazione di Mercato) diventano antracite.
-   Contrasti (WCAG): --testo-3 4,8:1 e --accento 5,0:1 anche su --superficie-2.
+   2b. Token — Antracite (tema scuro della piattaforma, scelta di Marco del 30/9 sera)
+   Antracite neutra e calda, come il tema scuro dell'app di Claude; mai nero puro.
+   L'accento è il bianco caldo: link, voce attiva, fuoco, primario chiaro con testo
+   antracite. Niente cobalto, niente blu, niente oro. Stati verde, ambra, rosso
+   un po' ammorbiditi. Dentro l'app anche le fasce scure (.fascia-notte, per
+   esempio la costellazione di Mercato) diventano antracite.
+   Contrasti WCAG (luminanza relativa, calcolati con node il 30/9):
+     su --pagina / --superficie / --superficie-2
+     --testo        13,77 / 12,01 / 10,36
+     --testo-2       8,95 /  7,81 /  6,74
+     --testo-3       6,21 /  5,42 /  4,68   (almeno 4,5:1 anche su --superficie-2)
+     --accento      14,39 / 12,55 / 10,83
+     --ok            7,85 /  6,85 /  5,91
+     --attenzione    8,89 /  7,76 /  6,69
+     --errore        7,03 /  6,14 /  5,29
+     --campo-bordo   4,03 /  3,52 /  3,04   (filetto dei campi: almeno 3:1)
+     --btn2-bordo    4,43 /  3,86 /  3,33
+     --linea-forte   3,32 /  2,90 /  2,50
+     primario: --btn-testo su --btn-fondo 12,59, su hover 15,16, su premuto 10,52
+     stati sul loro fondo: ok 6,15 · attenzione 6,94 · errore 5,73
+     --testo su --selezione 6,69 · conteggio (--su-testo su --testo) 13,77
    -------------------------------------------------------------------------- */
 [data-tema="notte"],
 .app-html .fascia-notte,
 .fascia-antracite {
   color-scheme: dark;
 
-  --pagina: #1E2024;
-  --superficie: #26292E;
-  --superficie-2: #2F3339;
-  --testo: #EDEEF0;
-  --testo-2: #BCC0C7;
-  --testo-3: #9A9FA9;
-  --su-testo: #1E2024;
-  --linea: #3A3E45;
-  --linea-2: #31353B;
-  --linea-forte: #5C616A;
+  --pagina: #262624;
+  --superficie: #30302E;
+  --superficie-2: #3A3A37;
+  --testo: #F5F4EF;
+  --testo-2: #C9C7BE;
+  --testo-3: #A8A69D;
+  --su-testo: #262624;
+  --linea: #454542;
+  --linea-2: #3C3C39;
+  --linea-forte: #77766E;
 
-  --accento: #8C9CFF;
-  --accento-forte: #A9B5FF;
-  --accento-testo: #1E2024;
-  --ghiaccio: #2D3456;
-  --su-ghiaccio: #CDD5FF;
+  /* accento bianco caldo: i link restano riconoscibili perché sottolineati (qui sotto) */
+  --accento: #FAF9F5;
+  --accento-forte: #E4E2DA;
+  --accento-testo: #262624;
+  --ghiaccio: #42423E;
+  --su-ghiaccio: #F5F4EF;
 
-  --ok: #66D19E;
-  --ok-fondo: #213A30;
-  --attenzione: #EFC36B;
-  --attenzione-fondo: #3A3427;
-  --attenzione-linea: #6A5A3B;
-  --su-attenzione: #1E2024;
-  --errore: #FF8E8E;
-  --errore-fondo: #3E282B;
+  --ok: #86C9A0;
+  --ok-fondo: #2E3A32;
+  --attenzione: #E4C27E;
+  --attenzione-fondo: #3C372B;
+  --attenzione-linea: #6B5E44;
+  --su-attenzione: #262624;
+  --errore: #F09A92;
+  --errore-fondo: #43302D;
 
-  --focus: #8C9CFF;
+  --focus: #FAF9F5;
   --riga-hover: color-mix(in srgb, var(--superficie-2) 60%, transparent);
-  --selezione: #3B4682;
+  --selezione: #57564F;
 
-  /* primario sull'antracite = porcellana con testo antracite */
-  --btn-fondo: #F4F5F7;
-  --btn-fondo-hover: #DCE6FF;
-  --btn-fondo-premuto: #C6D3FA;
-  --btn-testo: #1E2024;
-  --btn2-bordo: #EDEEF0;
-  --btn2-testo: #EDEEF0;
+  /* primario sull'antracite: chiaro con testo antracite, al passaggio bianco pieno */
+  --btn-fondo: #ECEAE3;
+  --btn-fondo-hover: #FFFFFF;
+  --btn-fondo-premuto: #D9D7CF;
+  --btn-testo: #262624;
+  /* secondario: filetto grigio che al passaggio si riempie di bianco */
+  --btn2-bordo: #8C8B83;
+  --btn2-testo: #F5F4EF;
   --btn2-fondo: transparent;
-  --btn2-hover: #8C9CFF;
+  --btn2-hover: #FFFFFF;
 
   --campo-fondo: transparent;
-  --campo-bordo: #7A7F89;
-  --campo-bordo-hover: #9A9FA9;
-  --campo-vuoto: #7A7F89;
+  --campo-bordo: #85847C;
+  --campo-bordo-hover: #A8A69D;
+  --campo-vuoto: #85847C;
 
-  --interruttore-spento: #464B53;
-  --interruttore-pomello: #BCC0C7;
+  --interruttore-spento: #4A4A46;
+  --interruttore-pomello: #C9C7BE;
 
-  --ombra-menu: 0 20px 48px -18px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .28);
+  --ombra-menu: 0 20px 48px -18px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .3);
+}
+
+/* Con l'accento bianco il colore non basta: nel tema scuro i link e le azioni in riga
+   sono sempre sottolineati (1 px, 3 px sotto le lettere). :where() tiene bassa la
+   specificità, così passaggio e stato disattivato dei singoli comandi vincono ancora.
+   Le azioni tenui («Annulla») restano come nel chiaro. */
+:where([data-tema="notte"], .app-html .fascia-notte, .fascia-antracite) :is(.pp-link, .pp-prosa a, .pp-azione:not(.pp-azione--tenue)) {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
 }
 
 /* La fascia applica anche fondo e colore del testo */
